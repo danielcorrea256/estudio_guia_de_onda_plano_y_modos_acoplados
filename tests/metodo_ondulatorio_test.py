@@ -1,9 +1,12 @@
 import numpy as np
 import math
-from metodo_ondulatorio import funcion_ondulatoria, metodo_ondulatorio
+from methods.metodo_ondulatorio import funcion_ondulatoria, metodo_ondulatorio
 
 
 def test_TE_function(): 
+    import os
+
+    print("Current directory:", os.getcwd())
     """
     Verifica que la función funcion_ondulatoria para los modos TE (Transverse Electric) 
     genere resultados consistentes con una funcion hallada anteriormente en el Taller de Fotonica y Fibras opticas.

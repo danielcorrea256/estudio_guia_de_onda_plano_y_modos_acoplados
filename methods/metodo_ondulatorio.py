@@ -25,11 +25,11 @@ def get_W(n_co, n_cl, m, modo):
     if   m%2==0 and modo=="TE":
         return lambda U : U * math.tan(U)
     elif m%2==1 and modo=="TE":
-        return lambda U : U / math.tan(U)
+        return lambda U : -U / math.tan(U)
     elif m%2==0 and modo=="TM":
         return lambda U : (n_cl / n_co)**2 * U * math.tan(U)
     elif m%2==1 and modo=="TM":
-        return lambda U : (n_cl / n_co)**2 * U * 1/math.tan(U)
+        return lambda U : -(n_cl / n_co)**2 * U * 1/math.tan(U)
     else:
         raise ValueError(f"Modo no valido, solo se vale TM o TE, se recibio {modo}")
 
@@ -66,7 +66,7 @@ def funcion_ondulatoria(n_co, n_cl, h, k_0, m, modo):
 
     left_side_equation = lambda U : (U**2 + W(U)**2) 
     right_side_equation = (k_0 * math.pi * h / 2)**2 * (n_co**2  - n_cl**2)
-    print(right_side_equation)
+    
     # Como se tiene de la teoria que left_side_equation = right_side_equation
     # Entonces left_side_equation - right_side_equation = 0.
     z = lambda U : left_side_equation(U) - right_side_equation

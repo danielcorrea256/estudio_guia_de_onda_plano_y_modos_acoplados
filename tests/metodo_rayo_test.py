@@ -1,6 +1,6 @@
 import numpy as np
 import math
-from metodo_rayos import funcion_rayo,metodo_rayo
+from methods.metodo_rayos import funcion_rayo,metodo_rayo
 
 def f_TE(theta,m):
     return 6*math.pi*math.cos(theta) - 4*math.atan((math.sqrt((2.25*math.sin(theta)**2)-1))/(1.5*math.cos(theta)))-2*m*math.pi
