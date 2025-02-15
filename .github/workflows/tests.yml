@@ -9,6 +9,7 @@ on:
     branches:
       - main
       - github-action
+      - gui-pyside
 
 jobs:
   test:
