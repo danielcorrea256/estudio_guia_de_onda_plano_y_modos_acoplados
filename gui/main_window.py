@@ -14,11 +14,9 @@ class MainWindow(QWidget):
 
         self.home_page = HomePage()
         self.form_page = FormPage()
-        self.results_page = ResultsPage()
 
         self.stack.addWidget(self.home_page)    # index 0
         self.stack.addWidget(self.form_page)    # index 1
-        self.stack.addWidget(self.results_page) # index 2
 
         layout = QVBoxLayout(self)
         layout.addWidget(self.stack)
@@ -36,25 +34,21 @@ class MainWindow(QWidget):
         2. Pass data to the results page.
         3. Switch to the results page.
         """
+        
+        try:
+            n_co = float(self.form_page.n_co_input.text())
+            n_cl = float(self.form_page.n_cl_input.text())
+            n_t = float(self.form_page.n_t_input.text())
+            h = float(self.form_page.h_input.text())
+            k_0 = float(self.form_page.k_0_input.text())
+            lambd = float(self.form_page.lambda_input.text())
 
-        n_co = float(self.form_page.n_co_input.text())
-        n_cl = float(self.form_page.n_cl_input.text())
-        n_t = float(self.form_page.n_t_input.text())
-        h = float(self.form_page.h_input.text())
-        k_0 = float(self.form_page.k_0_input.text())
-        lambd = float(self.form_page.lambda_input.text())
-
-        # Pass the form data into the results page
-        self.results_page.set_data(
-            n_co=n_co, 
-            n_cl=n_cl, 
-            n_t=n_t,
-            h=h,
-            k_0=k_0,
-            lambd=lambd
-        )
+            self.results_page = ResultsPage(n_co, n_cl, n_t, h, k_0, lambd)
+        except Exception:
+            self.results_page = ResultsPage(1.5, 1, 1, 1, 2, 1)
 
         # Now switch to the results page
+        self.stack.addWidget(self.results_page) # index 2
         self.stack.setCurrentWidget(self.results_page)
 
 if __name__ == "__main__":
