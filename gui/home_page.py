@@ -1,14 +1,51 @@
+"""
+HomePage Module
+
+This module defines the `HomePage` class, which serves as the main landing page 
+for a PySide6 GUI application. It displays a title, a brief description, and a 
+button to navigate to the form page.
+"""
+
+
 from PySide6.QtWidgets import (
     QWidget, QLabel, QVBoxLayout, QPushButton
 )
 from PySide6.QtGui import QFont
 
 class HomePage(QWidget):
+    """
+    A QWidget subclass that represents the home page of the application.
+
+    The home page displays:
+    - A title label.
+    - A description label with an overview of the application.
+    - A button to navigate to the form page.
+
+    Args:
+        parent (QWidget, optional): The parent widget. Defaults to None.
+    """
+
     def __init__(self, parent=None):
+        """
+        Initializes the HomePage with a title, description, and navigation button.
+
+        Args:
+            parent (QWidget, optional): The parent widget. Defaults to None.
+        """
         super().__init__(parent)
         self.setup_ui()
 
+
     def setup_ui(self):
+        """
+        Sets up the user interface for the home page.
+
+        This includes:
+        - A title label with bold formatting.
+        - A description label with word wrapping.
+        - A button to navigate to the form view.
+        - A stretch to push content to the top for better alignment.
+        """
         layout = QVBoxLayout()
         layout.setContentsMargins(20, 20, 20, 20)
         layout.setSpacing(15)
@@ -30,5 +67,6 @@ class HomePage(QWidget):
         self.go_to_form_btn = QPushButton("Go to Form")
         layout.addWidget(self.go_to_form_btn)
 
-        layout.addStretch()  # Pushes the content to the top
+        # Push content to the top for better alignment
+        layout.addStretch() 
         self.setLayout(layout)

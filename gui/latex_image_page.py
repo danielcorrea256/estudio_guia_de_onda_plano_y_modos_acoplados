@@ -1,24 +1,60 @@
+"""
+LatexLabel Module
+
+This module defines the `LatexLabel` class, which extends QLabel to render
+LaTeX-formatted mathematical expressions as images using Matplotlib.
+"""
+
+
 import io
 import matplotlib.pyplot as plt
 from PySide6.QtWidgets import QLabel
 from PySide6.QtGui import QPixmap
 
+
 class LatexLabel(QLabel):
     """
-    A custom QLabel that renders (MathText) LaTeX as an image using Matplotlib,
-    with minimal padding and a transparent background.
+    A QLabel subclass that renders LaTeX mathematical expressions as an image.
+
+    This class uses Matplotlib to render LaTeX MathText and converts it into 
+    a QPixmap for display. It ensures minimal padding and a transparent background.
+
+    Args:
+        latex_text (str): The LaTeX string to be rendered.
+        parent (QWidget, optional): The parent widget. Defaults to None.
+        fontsize (int, optional): The font size of the rendered LaTeX text. Defaults to 8.
     """
 
+
     def __init__(self, latex_text, parent=None, fontsize=8):
+        """
+        Initializes the LatexLabel with the given LaTeX text.
+
+        Args:
+            latex_text (str): The LaTeX string to render.
+            parent (QWidget, optional): The parent widget. Defaults to None.
+            fontsize (int, optional): Font size for the rendered LaTeX text. Defaults to 8.
+        """
         super().__init__(parent)
         pixmap = self._latex_to_pixmap(latex_text, fontsize)
         self.setPixmap(pixmap)
 
+
     def _latex_to_pixmap(self, latex_text, fontsize):
         """
-        Render LaTeX text to an in-memory PNG (via Matplotlib),
-        then convert to a QPixmap with minimal whitespace.
+        Converts LaTeX text into a QPixmap using Matplotlib.
+
+        This method renders the given LaTeX string as an image with a transparent
+        background, ensuring minimal whitespace.
+
+        Args:
+            latex_text (str): The LaTeX string to render.
+            fontsize (int): The font size of the text.
+
+        Returns:
+            QPixmap: The rendered LaTeX expression as a QPixmap.
         """
+
         # Create a small figure. We'll rely on bbox_inches='tight' to expand only as needed.
         fig, ax = plt.subplots(figsize=(0.01, 0.01))
         
