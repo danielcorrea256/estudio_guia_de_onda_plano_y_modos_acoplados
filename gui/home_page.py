@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QWidget, QLabel, QVBoxLayout, QPushButton
 )
 from PySide6.QtGui import QFont
+from gui.form_page import FormPage
 
 
 class HomePage(QWidget):
@@ -26,14 +27,16 @@ class HomePage(QWidget):
         parent (QWidget, optional): The parent widget. Defaults to None.
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, parent, stack):
         """
         Initializes the HomePage with a title, description, and navigation button.
 
         Args:
-            parent (QWidget, optional): The parent widget. Defaults to None.
+            parent (QWidget): The parent widget.
+            stack (QStackedWidget): The current stack of views        
         """
         super().__init__(parent)
+        self.stack = stack
         self.setup_ui()
 
 
@@ -66,8 +69,15 @@ class HomePage(QWidget):
 
         # Button to switch to the Form view
         self.go_to_form_btn = QPushButton("Go to Form")
+        self.go_to_form_btn.clicked.connect(self.go_to_form)
         layout.addWidget(self.go_to_form_btn)
 
         # Push content to the top for better alignment
         layout.addStretch() 
         self.setLayout(layout)
+
+
+    def go_to_form(self):
+        self.form_page = FormPage(self, self.stack)
+        self.stack.addWidget(self.form_page)
+        self.stack.setCurrentWidget(self.form_page)

@@ -9,10 +9,8 @@ using QStackedWidget. It allows navigation between:
 """
 
 
-import sys
-from PySide6.QtWidgets import QApplication, QWidget, QStackedWidget, QVBoxLayout
+from PySide6.QtWidgets import QWidget, QStackedWidget, QVBoxLayout
 from gui.home_page import HomePage
-from gui.form_page import FormPage
 from gui.results_page import ResultsPage
 
 
@@ -39,28 +37,13 @@ class MainWindow(QWidget):
         # Create a stacked widget to manage multiple pages
         self.stack = QStackedWidget()
 
-        # Initialize pages
-        self.home_page = HomePage()
-        self.form_page = FormPage()
-
-        # Add pages to the stack
-        self.stack.addWidget(self.home_page)    # index 0
-        self.stack.addWidget(self.form_page)    # index 1
+        # Initialize home page
+        self.home_page = HomePage(self, self.stack)
+        self.stack.addWidget(self.home_page)
 
         # Set up the layout
         layout = QVBoxLayout(self)
         layout.addWidget(self.stack)
-
-        # Connect buttons for navigation
-        self.home_page.go_to_form_btn.clicked.connect(self.show_form)
-        self.form_page.submit_btn.clicked.connect(self.show_results)
-
-
-    def show_form(self):
-        """
-        Switches the view to the form page.
-        """
-        self.stack.setCurrentWidget(self.form_page)
 
 
     def show_results(self):

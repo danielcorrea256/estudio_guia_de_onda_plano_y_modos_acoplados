@@ -9,7 +9,7 @@ are shown in separate tables with labeled columns and rows.
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-    QTableWidget, QTableWidgetItem, QHeaderView
+    QTableWidget, QTableWidgetItem, QHeaderView, QPushButton
 )
 from PySide6.QtGui import QFont
 from methods.metodo_ondulatorio import metodo_ondulatorio
@@ -46,18 +46,19 @@ class ResultsPage(QWidget):
     N = 2 # Number of rows (2 for TE, TM)
     M = 3 # Number of columns (3 for 0,1,2)
 
-    def __init__(self, n_co, n_cl, n_t, h, k_0, lambd, parent=None):
+    def __init__(self, parent, stack, n_co, n_cl, n_t, h, k_0, lambd):
         """
         Initializes the ResultsPage with the given parameters and sets up the UI.
 
         Args:
+            parent (QWidget): The parent widget.
+            stack (QStackedWidget): The current stack of views
             n_co (float): Core refractive index.
             n_cl (float): Cladding refractive index.
             n_t (float): Transverse refractive index.
             h (float): Waveguide height.
             k_0 (float): Free-space wave number.
             lambd (float): Wavelength.
-            parent (QWidget, optional): Parent widget. Defaults to None.
         """
 
         super().__init__(parent)
@@ -68,6 +69,7 @@ class ResultsPage(QWidget):
         self.h = h
         self.k_0 = k_0
         self.lambd = lambd
+        self.stack = stack
         
         self.setup_ui()
 
@@ -110,6 +112,11 @@ class ResultsPage(QWidget):
 
         for layout in table_layouts:
             main_layout.addLayout(layout, 1)
+
+        # Back button
+        self.submit_btn = QPushButton("Back")
+        layout.addWidget(self.submit_btn)
+        self.submit_btn.clicked.connect(self.go_to_form)
 
         self.setLayout(main_layout)
 
@@ -172,3 +179,7 @@ class ResultsPage(QWidget):
 
             table.setItem(0, m, tableItem_TE)
             table.setItem(1, m, tableItem_TM)
+
+
+    def go_to_form(self):
+        self.stack.removeWidget(self)
