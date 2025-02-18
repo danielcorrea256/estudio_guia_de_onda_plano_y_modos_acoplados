@@ -32,7 +32,7 @@ class MainWindow(QWidget):
         """
         super().__init__()
         self.setWindowTitle("Multi-View Application")
-        self.setMinimumSize(1200, 800)
+        self.setMinimumSize(800, 600)
 
         # Create a stacked widget to manage multiple pages
         self.stack = QStackedWidget()
@@ -44,6 +44,85 @@ class MainWindow(QWidget):
         # Set up the layout
         layout = QVBoxLayout(self)
         layout.addWidget(self.stack)
+
+        # Apply Stylesheet for more life!
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #f0f0f0;
+                font-family: Helvetica, Arial, sans-serif;
+            }
+
+            QLabel {
+                font-size: 16px; /* Reduced font size */
+                font-weight: bold;
+                color: #4a4a4a;
+            }
+
+            QPushButton {
+                background-color: #7f8c8d;
+                color: white;
+                border-radius: 4px;
+                padding: 6px; /* Smaller padding */
+                font-size: 13px;
+                border: 1px solid #5e6b6b;
+            }
+
+            QPushButton:hover {
+                background-color: #707b7c;
+            }
+
+            QTableWidget {
+                border: 1px solid #a0a0a0;
+                background-color: white;
+                gridline-color: #c0c0c0;
+            }
+
+            QHeaderView::section {
+                background-color: #5d6d7e;
+                color: white;
+                padding: 4px;
+                border: none;
+                font-weight: bold;
+            }
+
+            /* FORM STYLING - Smaller Inputs */
+            QLineEdit, QComboBox, QTextEdit, QSpinBox {
+                background-color: white;
+                border: 1px solid #b0b0b0;
+                border-radius: 3px;
+                padding: 4px;  /* Reduced padding */
+                font-size: 13px; /* Smaller font */
+                color: #333;
+                min-height: 24px; /* Reduced height */
+            }
+
+            QLineEdit:focus, QComboBox:focus, QTextEdit:focus, QSpinBox:focus {
+                border: 1px solid #7f8c8d;
+            }
+
+            QComboBox::drop-down {
+                border-left: 1px solid #b0b0b0;
+                width: 18px;
+                background-color: #7f8c8d;
+            }
+
+            QComboBox::down-arrow {
+                image: url(down-arrow.png);
+            }
+
+            QSpinBox::up-button, QSpinBox::down-button {
+                background-color: #7f8c8d;
+                border: none;
+                width: 14px;
+            }
+
+            QSpinBox::up-arrow, QSpinBox::down-arrow {
+                image: url(up-arrow.png);
+            }
+        """)
+
+
+
 
 
     def show_results(self):

@@ -7,13 +7,15 @@ are shown in separate tables with labeled columns and rows.
 """
 
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-    QTableWidget, QTableWidgetItem, QHeaderView, QPushButton
+    QTableWidget, QTableWidgetItem, QHeaderView, QPushButton, QSizePolicy
 )
 from PySide6.QtGui import QFont
 from methods.metodo_ondulatorio import metodo_ondulatorio
 from methods.metodo_rayos import metodo_rayo
+from gui.latex_image_page import LatexLabel
 
 
 class ResultsPage(QWidget):
@@ -42,6 +44,10 @@ class ResultsPage(QWidget):
     TITLES = {
         "rayos": "Metodo de rayos", 
         "ondulatorio": "Metodo ondulatorio"
+    }
+    EQUATIONS = {
+        "rayos": r"$2n_{co}k_0hcos(\alpha)-2\phi_s-2\phi_{cl}=2m\pi^2$",
+        "ondulatorio": r"$W^2+U^2 =(\frac{k_0 h}{2})^2(n_{co}^2 - n_{cl}^2)$"
     }
     N = 2 # Number of rows (2 for TE, TM)
     M = 3 # Number of columns (3 for 0,1,2)
@@ -77,29 +83,34 @@ class ResultsPage(QWidget):
     def setup_ui(self):
         """
         Sets up the UI layout, including tables for displaying results.
-
-        Each method has:
-        - A title label
-        - A description label
-        - A results table (2 rows × 3 columns)
         """
-
+        tables_layout = QHBoxLayout()
         table_layouts = []
 
         for m in self.METHODS:
             layout_table = QVBoxLayout()
+            
             title = QLabel(self.TITLES[m])
-            title.setFont(QFont("Arial", 16, QFont.Bold))
+            title.setFont(QFont("Helvetica", 16, QFont.Bold))
             layout_table.addWidget(title)
 
-            description = QLabel("Description for the rayos column results.")
-            description.setWordWrap(True)
-            layout_table.addWidget(description)
+            equation = LatexLabel(self.EQUATIONS[m])
+            layout_table.addWidget(equation)
 
-            table = QTableWidget(2, 3)
+            # Create table
+            table = QTableWidget(self.N, self.M)
             table.setHorizontalHeaderLabels(["0", "1", "2"])
             table.setVerticalHeaderLabels(["TE", "TM"])
             table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+
+            # Deactivate scrollbar inside tables
+            table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+            # Set size policy: Expand horizontally, but keep a fixed height
+            table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+            table.setMaximumHeight(table.verticalHeader().length() + table.horizontalHeader().height() + 10) 
+
             layout_table.addWidget(table)
             table_layouts.append(layout_table)
 
@@ -108,14 +119,17 @@ class ResultsPage(QWidget):
             elif m == "ondulatorio":
                 self.fillTableOndulatorio(table)
 
-        main_layout = QHBoxLayout(self)
-
         for layout in table_layouts:
-            main_layout.addLayout(layout, 1)
+            tables_layout.addLayout(layout)
 
-        # Back button
+        main_layout = QVBoxLayout(self)
+        main_layout.addLayout(tables_layout, stretch=0)
+
+        # Back button, centered
         self.submit_btn = QPushButton("Back")
-        layout.addWidget(self.submit_btn)
+        self.submit_btn.setFixedWidth(100)
+        
+        main_layout.addWidget(self.submit_btn, alignment=Qt.AlignCenter)
         self.submit_btn.clicked.connect(self.go_to_form)
 
         self.setLayout(main_layout)
@@ -183,3 +197,5 @@ class ResultsPage(QWidget):
 
     def go_to_form(self):
         self.stack.removeWidget(self)
+
+        

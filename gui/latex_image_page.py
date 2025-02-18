@@ -26,7 +26,7 @@ class LatexLabel(QLabel):
     """
 
 
-    def __init__(self, latex_text, parent=None, fontsize=8):
+    def __init__(self, latex_text, parent=None, fontsize=10):
         """
         Initializes the LatexLabel with the given LaTeX text.
 
@@ -65,9 +65,6 @@ class LatexLabel(QLabel):
         # Remove all spines/ticks and any default margin
         ax.axis('off')
         ax.margins(0, 0)
-        
-        # "Tight layout" can help, though we'll mainly rely on bbox_inches='tight'
-        plt.tight_layout(pad=0)
         
         # Save figure to an in-memory buffer with tight bounding box, no extra padding
         buf = io.BytesIO()

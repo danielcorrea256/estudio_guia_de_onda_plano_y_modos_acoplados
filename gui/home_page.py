@@ -69,6 +69,7 @@ class HomePage(QWidget):
 
         # Button to switch to the Form view
         self.go_to_form_btn = QPushButton("Go to Form")
+        self.go_to_form_btn.setFixedWidth(100)
         self.go_to_form_btn.clicked.connect(self.go_to_form)
         layout.addWidget(self.go_to_form_btn)
 
