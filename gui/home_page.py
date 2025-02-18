@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QFont
 
+
 class HomePage(QWidget):
     """
     A QWidget subclass that represents the home page of the application.
