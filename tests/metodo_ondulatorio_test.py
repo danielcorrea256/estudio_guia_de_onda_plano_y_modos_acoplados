@@ -4,9 +4,6 @@ from methods.metodo_ondulatorio import funcion_ondulatoria, metodo_ondulatorio
 
 
 def test_TE_function(): 
-    import os
-
-    print("Current directory:", os.getcwd())
     """
     Verifica que la función funcion_ondulatoria para los modos TE (Transverse Electric) 
     genere resultados consistentes con una funcion hallada anteriormente en el Taller de Fotonica y Fibras opticas.
@@ -22,7 +19,7 @@ def test_TE_function():
     n_co = 1.5  # Índice de refracción del núcleo
     n_cl = 1    # Índice de refracción del revestimiento
     h = 1       # Altura del núcleo
-    k_0 = 2     # Número de onda en el vacío
+    lambd = 1   # Luz incidente
     modo = "TE" # Tipo de modo (Transverse Electric)
     
     # Función que se hallo en el Taller de Fotonica y Fibras opticas
@@ -38,7 +35,14 @@ def test_TE_function():
 
     for m in range(3): 
         # Obtener la función generada por funcion_ondulatoria
-        f = funcion_ondulatoria(n_co=n_co, n_cl=n_cl, h=h, k_0=k_0, m=m, modo=modo)
+        f = funcion_ondulatoria(
+            n_co=n_co, 
+            n_cl=n_cl, 
+            h=h, 
+            lambd=lambd,
+            m=m, 
+            modo=modo
+        )
 
         # Evaluar la función generada y la referencia en el mismo rango
         result = [f(x) for x in line]
@@ -64,8 +68,8 @@ def test_TM_function():
     n_co = 1.5  # Índice de refracción del núcleo
     n_cl = 1    # Índice de refracción del revestimiento
     h = 1       # Altura del núcleo
-    k_0 = 2     # Número de onda en el vacío
     modo = "TM" # Tipo de modo (Transverse Magnetic)
+    lambd = 1   # Luz incidente
 
     # Función que se hallo en el Taller de Fotonica y Fibras opticas
     def f_TM_reference(U, m):
@@ -80,7 +84,14 @@ def test_TM_function():
 
     for m in range(3):
         # Obtener la función generada por funcion_ondulatoria
-        f = funcion_ondulatoria(n_co=n_co, n_cl=n_cl, h=h, k_0=k_0, m=m, modo=modo)
+        f = funcion_ondulatoria(
+            n_co=n_co, 
+            n_cl=n_cl, 
+            h=h, 
+            lambd=lambd, 
+            m=m, 
+            modo=modo
+        )
 
         # Evaluar la función generada y la referencia en el mismo rango
         result = [f(x) for x in line]
@@ -117,7 +128,6 @@ def test_result():
         n_co=1.5, 
         n_cl=1,
         h=1,
-        k_0=2,
         lambd=1,
         ms=range(3) 
     )

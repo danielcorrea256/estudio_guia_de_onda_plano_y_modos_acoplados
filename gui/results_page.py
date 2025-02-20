@@ -32,9 +32,7 @@ class ResultsPage(QWidget):
     Args:
         n_co (float): Core refractive index.
         n_cl (float): Cladding refractive index.
-        n_t (float): Transverse refractive index.
         h (float): Waveguide height.
-        k_0 (float): Free-space wave number.
         lambd (float): Wavelength.
         parent (QWidget, optional): Parent widget. Defaults to None.
     """
@@ -52,7 +50,7 @@ class ResultsPage(QWidget):
     N = 2 # Number of rows (2 for TE, TM)
     M = 3 # Number of columns (3 for 0,1,2)
 
-    def __init__(self, parent, stack, n_co, n_cl, n_t, h, k_0, lambd):
+    def __init__(self, parent, stack, n_co, n_cl, h, lambd):
         """
         Initializes the ResultsPage with the given parameters and sets up the UI.
 
@@ -61,9 +59,7 @@ class ResultsPage(QWidget):
             stack (QStackedWidget): The current stack of views
             n_co (float): Core refractive index.
             n_cl (float): Cladding refractive index.
-            n_t (float): Transverse refractive index.
             h (float): Waveguide height.
-            k_0 (float): Free-space wave number.
             lambd (float): Wavelength.
         """
 
@@ -71,9 +67,7 @@ class ResultsPage(QWidget):
         
         self.n_co = n_co
         self.n_cl = n_cl
-        self.n_t = n_t
         self.h = h
-        self.k_0 = k_0
         self.lambd = lambd
         self.stack = stack
         
@@ -145,9 +139,9 @@ class ResultsPage(QWidget):
 
         results_rayo = metodo_rayo(
             n_co=self.n_co,
-            n_t=self.n_t,
+            n_cl=self.n_cl,
             h=self.h,
-            k_0=self.k_0,
+            lambd=self.lambd,
             ms=range(self.M)
         )
 
@@ -166,7 +160,6 @@ class ResultsPage(QWidget):
             n_co=self.n_co,
             n_cl=self.n_cl,
             h=self.h,
-            k_0=self.k_0,
             lambd=self.lambd,
             ms=range(self.M)
         )

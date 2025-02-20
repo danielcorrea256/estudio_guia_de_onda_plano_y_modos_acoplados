@@ -35,8 +35,8 @@ def get_E_y_odd(gamma, k, h):
     # returns function corresponding to Epsilon_y used in odd TE modes
 
     #calculate coefficients assumming c_1 = 1
-    # C_0 = math.cos(k*h/2)
-    # C_1 = 1
+    C_0 = math.cos(k*h/2)
+    C_1 = 1
 
     # C_0 = 0.76
     # C_1 = 1

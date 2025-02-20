@@ -10,7 +10,7 @@ from PySide6.QtGui import QFont
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QFormLayout, QLineEdit, QPushButton, QLabel,
-    QSpacerItem, QSizePolicy, QHBoxLayout
+    QSpacerItem, QSizePolicy, QHBoxLayout, QMessageBox
 )
 
 from gui.latex_image_page import LatexLabel
@@ -67,25 +67,19 @@ class FormPage(QWidget):
         form_layout = QFormLayout()
         self.n_co_input = QLineEdit()
         self.n_cl_input = QLineEdit()
-        self.n_t_input = QLineEdit()
         self.h_input = QLineEdit()
-        self.k_0_input = QLineEdit()
         self.lambda_input = QLineEdit()
 
         # Labels with LaTeX formatting
         n_co_label = LatexLabel(r"$n_{co}$")
         n_cl_label = LatexLabel(r"$n_{cl}$")
-        n_t_label = LatexLabel(r"$n_t$")
-        h_label = LatexLabel(r"$h$")
-        k_0_label = LatexLabel(r"$k_0$")
-        lambda_label = LatexLabel(r"$\lambda$")
+        h_label = LatexLabel(r"$h (\mu m)$")
+        lambda_label = LatexLabel(r"$\lambda (\mu m)$")
 
         # Adding labeled input fields to the form layout
         form_layout.addRow(n_co_label, self.n_co_input)
         form_layout.addRow(n_cl_label, self.n_cl_input)
-        form_layout.addRow(n_t_label, self.n_t_input)
         form_layout.addRow(h_label, self.h_input)
-        form_layout.addRow(k_0_label, self.k_0_input)
         form_layout.addRow(lambda_label, self.lambda_input)
         layout.addLayout(form_layout)
 
@@ -116,18 +110,28 @@ class FormPage(QWidget):
         try:
             n_co = float(self.form_page.n_co_input.text())
             n_cl = float(self.form_page.n_cl_input.text())
-            n_t = float(self.form_page.n_t_input.text())
             h = float(self.form_page.h_input.text())
-            k_0 = float(self.form_page.k_0_input.text())
             lambd = float(self.form_page.lambda_input.text())
+            self.results_page = ResultsPage(self, self.stack, n_co, n_cl, h, lambd)
+            assert n_co > n_cl
 
-            self.results_page = ResultsPage(self, self.stack, n_co, n_cl, n_t, h, k_0, lambd)
+            # Add and switch to the results page
+            self.stack.addWidget(self.results_page)
+            self.stack.setCurrentWidget(self.results_page)
+        except AssertionError:
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Warning)
+            msg_box.setWindowTitle("Warning")
+            msg_box.setText("n_co shoulg be bigger than n_cl")
+            msg_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+            result = msg_box.exec()
         except Exception:
-            self.results_page = ResultsPage(self, self.stack, 1.5, 1, 1, 1, 2, 1)
+            self.results_page = ResultsPage(self, self.stack, 1.5, 1, 1, 1)
 
-        # Add and switch to the results page
-        self.stack.addWidget(self.results_page)
-        self.stack.setCurrentWidget(self.results_page)
+            # Add and switch to the results page
+            self.stack.addWidget(self.results_page)
+            self.stack.setCurrentWidget(self.results_page)
+
 
     def go_to_homepage(self):
         self.stack.removeWidget(self)
