@@ -25,16 +25,16 @@ def get_W(n_co, n_cl, m, modo):
     if   m%2==0 and modo=="TE":
         return lambda U : U * math.tan(U)
     elif m%2==1 and modo=="TE":
-        return lambda U : U / math.tan(U)
+        return lambda U : -U / math.tan(U)
     elif m%2==0 and modo=="TM":
         return lambda U : (n_cl / n_co)**2 * U * math.tan(U)
     elif m%2==1 and modo=="TM":
-        return lambda U : (n_cl / n_co)**2 * U * 1/math.tan(U)
+        return lambda U : -(n_cl / n_co)**2 * U * 1/math.tan(U)
     else:
         raise ValueError(f"Modo no valido, solo se vale TM o TE, se recibio {modo}")
 
 
-def funcion_ondulatoria(n_co, n_cl, h, k_0, m, modo):
+def funcion_ondulatoria(n_co, n_cl, h, lambd, m, modo):
     """
     Retorna una funcion cuyas raices son los valores permitidos para U en la propagacion de modos de onda
     Tenemos en general que debe cumplirse U^2 + W^2 = (k_0 * h / 2)^2 * (n_co^2  - n_cl^2)
@@ -45,7 +45,7 @@ def funcion_ondulatoria(n_co, n_cl, h, k_0, m, modo):
         n_co (float): Índice de refracción del núcleo de la guía de onda.
         n_cl (float): Índice de refracción del revestimiento (cladding).
         h (float): Altura del núcleo de la guía de onda.
-        k_0 (float): Número de onda en el vacío.
+        lambd (float): Luz incidente.
         m (int): Número de modo de propagación (0, 1, 2, ...).
         modo (str): Tipo de modo de propagación, puede ser "TE" (Transverse Electric) o "TM" (Transverse Magnetic).
 
@@ -64,9 +64,11 @@ def funcion_ondulatoria(n_co, n_cl, h, k_0, m, modo):
         modo=modo
     )
 
+    k_0 = 2*math.pi / lambd
+
     left_side_equation = lambda U : (U**2 + W(U)**2) 
-    right_side_equation = (k_0 * math.pi * h / 2)**2 * (n_co**2  - n_cl**2)
-    print(right_side_equation)
+    right_side_equation = (k_0 * h / 2)**2 * (n_co**2  - n_cl**2)
+    
     # Como se tiene de la teoria que left_side_equation = right_side_equation
     # Entonces left_side_equation - right_side_equation = 0.
     z = lambda U : left_side_equation(U) - right_side_equation
@@ -75,16 +77,20 @@ def funcion_ondulatoria(n_co, n_cl, h, k_0, m, modo):
     return z
 
 
-def metodo_ondulatorio(n_co, n_cl, h, k_0, lambd, ms):
+def metodo_ondulatorio(n_co, n_cl, h, lambd, ms):
     """
+    
+    n_co > n_cl
+    agregar n efectivo
+
     Calcula los ángulos de incidencia permitidos (theta) para los modos TE y TM en una guía de onda
     utilizando el análisis ondulatorio.
 
     Args:
         n_co (float): Índice de refracción del núcleo de la guía de onda.
-        n_cl (float): Índice de refracción del revestimiento (cladding).
+        n_cl (float): Índice de refracción del revestimiento (cladding). = nt
         h (float): Altura del núcleo de la guía de onda.
-        k_0 (float): Número de onda en el vacío.
+        k_0 (float): Número de onda en el vacío. (k_0 = 2pi / lambda)
         lambd (float): Longitud de onda de la luz en el medio.
         ms (list[int]): Lista de números de modo a calcular.
 
@@ -93,7 +99,6 @@ def metodo_ondulatorio(n_co, n_cl, h, k_0, lambd, ms):
               - 'TE': Diccionario de modos TE con m como clave y theta_m en grados como valor.
               - 'TM': Diccionario de modos TM con m como clave y theta_m en grados como valor.
     """
-
 
     TEs = {} # Diccionario para almacenar los ángulos de incidencia para los modos TE
     TMs = {} # Diccionario para almacenar los ángulos de incidencia para los modos TM
@@ -106,7 +111,7 @@ def metodo_ondulatorio(n_co, n_cl, h, k_0, lambd, ms):
 
         # Resolver para el modo TE
         # 1. Tenemos una expresion f_TE(U) donde al igualar a 0, tenemos los valores de U permitidos
-        f_TE = funcion_ondulatoria(n_co, n_cl, h, k_0, m, "TE") 
+        f_TE = funcion_ondulatoria(n_co, n_cl, h, lambd, m, "TE") 
         
         # 2. Valor valido para U en la ecuacion original
         U_TE = scipy.optimize.root_scalar(f_TE, method="bisect", bracket=interval).root # raiz de f_TE
@@ -118,7 +123,7 @@ def metodo_ondulatorio(n_co, n_cl, h, k_0, lambd, ms):
         TEs[m] = math.degrees(theta_TE) 
 
         # Resolver para el modo TM, de manera similar al modo TE
-        f_TM = funcion_ondulatoria(n_co, n_cl, h, k_0, m, "TM") 
+        f_TM = funcion_ondulatoria(n_co, n_cl, h, lambd, m, "TM") 
         U_TM = scipy.optimize.root_scalar(f_TM, method="bisect" ,bracket=interval).root 
         theta_TM = math.acos((U_TM * lambd) / (math.pi * n_co))
         TMs[m] = math.degrees(theta_TM)
