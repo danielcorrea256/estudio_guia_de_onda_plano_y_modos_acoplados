@@ -36,11 +36,12 @@ class LatexLabel(QLabel):
             fontsize (int, optional): Font size for the rendered LaTeX text. Defaults to 8.
         """
         super().__init__(parent)
-        pixmap = self._latex_to_pixmap(latex_text, fontsize)
+        pixmap = LatexLabel.latex_to_pixmap(latex_text, fontsize)
         self.setPixmap(pixmap)
 
 
-    def _latex_to_pixmap(self, latex_text, fontsize):
+    @classmethod
+    def latex_to_pixmap(self, latex_text, fontsize=10):
         """
         Converts LaTeX text into a QPixmap using Matplotlib.
 

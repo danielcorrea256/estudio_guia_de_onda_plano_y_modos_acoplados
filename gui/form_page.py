@@ -10,9 +10,8 @@ from PySide6.QtGui import QFont
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QFormLayout, QLineEdit, QPushButton, QLabel,
-    QSpacerItem, QSizePolicy, QHBoxLayout, QMessageBox
+    QHBoxLayout, QMessageBox
 )
-
 from gui.latex_image_page import LatexLabel
 from gui.results_page import ResultsPage
 
@@ -86,17 +85,17 @@ class FormPage(QWidget):
         # Create a horizontal layout for the buttons
         buttons_layout = QHBoxLayout()
 
-        # Submit button
-        self.submit_btn = QPushButton("Submit")
-        self.submit_btn.setFixedWidth(100)
-        buttons_layout.addWidget(self.submit_btn)
-        self.submit_btn.clicked.connect(self.go_to_results)
-
         # Back button
         self.back_btn = QPushButton("Back")
         self.back_btn.setFixedWidth(100)
         buttons_layout.addWidget(self.back_btn)
         self.back_btn.clicked.connect(self.go_to_homepage)
+
+        # Submit button
+        self.submit_btn = QPushButton("Submit")
+        self.submit_btn.setFixedWidth(100)
+        buttons_layout.addWidget(self.submit_btn)
+        self.submit_btn.clicked.connect(self.go_to_results)
 
         # Align buttons to the center
         buttons_layout.setAlignment(Qt.AlignCenter)
@@ -108,30 +107,23 @@ class FormPage(QWidget):
     def go_to_results(self):        
         # For dev purposes, accept empty inputs
         try:
-            n_co = float(self.form_page.n_co_input.text())
-            n_cl = float(self.form_page.n_cl_input.text())
-            h = float(self.form_page.h_input.text())
-            lambd = float(self.form_page.lambda_input.text())
-            self.results_page = ResultsPage(self, self.stack, n_co, n_cl, h, lambd)
+            n_co = float(self.n_co_input.text())
+            n_cl = float(self.n_cl_input.text())
+            h = float(self.h_input.text())
+            lambd = float(self.lambda_input.text())
+            
             assert n_co > n_cl
+            self.results_page = ResultsPage(self, self.stack, n_co, n_cl, h, lambd)
 
             # Add and switch to the results page
             self.stack.addWidget(self.results_page)
             self.stack.setCurrentWidget(self.results_page)
         except AssertionError:
-            msg_box = QMessageBox()
-            msg_box.setIcon(QMessageBox.Warning)
-            msg_box.setWindowTitle("Warning")
-            msg_box.setText("n_co shoulg be bigger than n_cl")
-            msg_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+            msg_box = QMessageBox.critical(self,"Error!", "the condition n_co > n_cl should hold", QMessageBox.Ok)
             result = msg_box.exec()
-        except Exception:
-            self.results_page = ResultsPage(self, self.stack, 1.5, 1, 1, 1)
-
-            # Add and switch to the results page
-            self.stack.addWidget(self.results_page)
-            self.stack.setCurrentWidget(self.results_page)
-
+        except ValueError:
+            msg_box = QMessageBox.critical(self,"Error!", "There are empty fields or invalid numbers, use dots for decimals", QMessageBox.Ok)
+            result = msg_box.exec()
 
     def go_to_homepage(self):
         self.stack.removeWidget(self)

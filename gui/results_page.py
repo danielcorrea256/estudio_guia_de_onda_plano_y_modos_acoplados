@@ -12,11 +12,12 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QTableWidget, QTableWidgetItem, QHeaderView, QPushButton, QSizePolicy
 )
-from PySide6.QtGui import QFont
+from PySide6.QtGui import QFont, QIcon
 from methods.metodo_ondulatorio import metodo_ondulatorio
 from methods.metodo_rayos import metodo_rayo
 from gui.latex_image_page import LatexLabel
-
+import matplotlib
+import math
 
 class ResultsPage(QWidget):
     """
@@ -47,7 +48,19 @@ class ResultsPage(QWidget):
         "rayos": r"$2n_{co}k_0hcos(\alpha)-2\phi_s-2\phi_{cl}=2m\pi^2$",
         "ondulatorio": r"$W^2+U^2 =(\frac{k_0 h}{2})^2(n_{co}^2 - n_{cl}^2)$"
     }
-    N = 2 # Number of rows (2 for TE, TM)
+    VERTICAL_HEADERS = [
+        r"$TE$",
+        r"$TM$",
+        r"$n_{eff}TE$",
+        r"$n_{eff}TM$"
+    ]
+    HORIZONTAL_HEADERS = [
+        r"$0$",
+        r"$1$",
+        r"$2$"
+    ]
+
+    N = 4 # Number of rows
     M = 3 # Number of columns (3 for 0,1,2)
 
     def __init__(self, parent, stack, n_co, n_cl, h, lambd):
@@ -93,17 +106,27 @@ class ResultsPage(QWidget):
 
             # Create table
             table = QTableWidget(self.N, self.M)
-            table.setHorizontalHeaderLabels(["0", "1", "2"])
-            table.setVerticalHeaderLabels(["TE", "TM"])
-            table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+            
+            # Put headers
+            vertical_headers_items = self.getHeaders(self.VERTICAL_HEADERS)
+            horizonta_headers_items = self.getHeaders(self.HORIZONTAL_HEADERS)
+
+            for i in range(self.N):
+                table.setVerticalHeaderItem(i, vertical_headers_items[i])
+
+            for i in range(self.M):
+                table.setHorizontalHeaderItem(i, horizonta_headers_items[i])
 
             # Deactivate scrollbar inside tables
             table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
             table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            
+            table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)  # Stretch to fill width
+            table.verticalHeader().setSectionResizeMode(QHeaderView.Stretch)  # Stretch to fill width
 
             # Set size policy: Expand horizontally, but keep a fixed height
-            table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-            table.setMaximumHeight(table.verticalHeader().length() + table.horizontalHeader().height() + 10) 
+            table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            #table.setMaximumHeight(table.verticalHeader().length() + table.horizontalHeader().height() + 10) 
 
             layout_table.addWidget(table)
             table_layouts.append(layout_table)
@@ -128,6 +151,17 @@ class ResultsPage(QWidget):
 
         self.setLayout(main_layout)
 
+
+    def getHeaders(self, headers):
+        headers_items = []
+
+        for h in headers:
+            latex_pixmap = LatexLabel.latex_to_pixmap(h)
+            item = QTableWidgetItem()
+            item.setIcon(QIcon(latex_pixmap))
+            headers_items.append(item)
+
+        return headers_items
 
     def fillTableRayos(self, table):
         """
@@ -178,15 +212,26 @@ class ResultsPage(QWidget):
         """
 
         for m in range(self.M):
-            numerical_value_TE = round(results["TE"][m], 1)
-            numerical_value_TM = round(results["TM"][m], 1)
+            # extract angle
+            alpha_TE = round(results["TE"][m], 1)
+            alpha_TM = round(results["TM"][m], 1)
 
-            tableItem_TE = QTableWidgetItem(str(numerical_value_TE))
-            tableItem_TM = QTableWidgetItem(str(numerical_value_TM))
+            # Calculate coefficients for the table.
+            n_eff_TE = round(math.sin(math.radians(alpha_TE)) * self.n_co, 2)
+            n_eff_TM = round(math.sin(math.radians(alpha_TM)) * self.n_co, 2)
 
-            table.setItem(0, m, tableItem_TE)
-            table.setItem(1, m, tableItem_TM)
+            # Create items for the table.
+            tableItem_alpha_TE = QTableWidgetItem(str(alpha_TE))
+            tableItem_alpha_TM = QTableWidgetItem(str(alpha_TM))
+            tableItem_n_TE = QTableWidgetItem(str(n_eff_TE))
+            tableItem_n_TM = QTableWidgetItem(str(n_eff_TM))
 
+            # Put items on the table.
+            table.setItem(0, m, tableItem_alpha_TE)
+            table.setItem(1, m, tableItem_alpha_TM)
+            table.setItem(2, m, tableItem_n_TE)
+            table.setItem(3, m, tableItem_n_TM)
+            
 
     def go_to_form(self):
         self.stack.removeWidget(self)

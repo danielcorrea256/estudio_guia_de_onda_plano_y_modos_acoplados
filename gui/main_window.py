@@ -78,10 +78,9 @@ class MainWindow(QWidget):
             }
 
             QHeaderView::section {
-                background-color: #5d6d7e;
-                color: white;
-                padding: 4px;
-                border: none;
+                background-color: #f0f0f0; /* Light gray background */
+                padding: 5px;
+                border: 1px solid #dcdcdc;
                 font-weight: bold;
             }
 
