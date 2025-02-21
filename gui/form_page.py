@@ -119,11 +119,10 @@ class FormPage(QWidget):
             self.stack.addWidget(self.results_page)
             self.stack.setCurrentWidget(self.results_page)
         except AssertionError:
-            msg_box = QMessageBox.critical(self,"Error!", "the condition n_co > n_cl should hold", QMessageBox.Ok)
-            result = msg_box.exec()
+            msg_box = QMessageBox.critical(self,"Error!", "The condition n_co > n_cl should hold.", QMessageBox.Ok)
         except ValueError:
-            msg_box = QMessageBox.critical(self,"Error!", "There are empty fields or invalid numbers, use dots for decimals", QMessageBox.Ok)
-            result = msg_box.exec()
+            msg_box = QMessageBox.critical(self,"Error!", "There are empty fields or invalid numbers, use dots for decimals.", QMessageBox.Ok)
+
 
     def go_to_homepage(self):
         self.stack.removeWidget(self)

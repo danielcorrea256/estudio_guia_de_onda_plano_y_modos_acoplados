@@ -52,23 +52,30 @@ class MainWindow(QWidget):
                 font-family: Helvetica, Arial, sans-serif;
             }
 
-            QLabel {
-                font-size: 16px; /* Reduced font size */
-                font-weight: bold;
-                color: #4a4a4a;
-            }
-
             QPushButton {
-                background-color: #7f8c8d;
+                background-color: #2c3e50; /* Darker grayish-blue */
                 color: white;
-                border-radius: 4px;
-                padding: 6px; /* Smaller padding */
-                font-size: 13px;
-                border: 1px solid #5e6b6b;
+                border-radius: 6px; /* Slightly rounded corners */
+                padding: 8px 12px; /* Comfortable padding */
+                font-size: 14px;
+                font-weight: bold;
+                border: 2px solid #1f2d3d; /* Even darker border for contrast */
             }
 
             QPushButton:hover {
-                background-color: #707b7c;
+                background-color: #1f2d3d; /* Darker shade on hover */
+                border-color: #0f1a24;
+            }
+
+            QPushButton:pressed {
+                background-color: #0f1a24; /* Even darker shade when pressed */
+                border-color: #0a121a;
+            }
+
+            QPushButton:disabled {
+                background-color: #7f8c8d; /* Muted gray when disabled */
+                border-color: #5e6b6b;
+                color: #bdc3c7;
             }
 
             QTableWidget {
@@ -117,6 +124,21 @@ class MainWindow(QWidget):
 
             QSpinBox::up-arrow, QSpinBox::down-arrow {
                 image: url(up-arrow.png);
+            }
+                           
+            #titleLabel {
+                font-size: 16px; /* Larger and more prominent */
+                font-weight: 700; /* Stronger bold */
+                color: #2c3e50; /* Darker shade for better contrast */
+                text-align: center; /* Center the title */
+                padding: 10px 0; /* Adds spacing around */
+                letter-spacing: 1px; /* Slight spacing for readability */
+                text-transform: uppercase; /* Gives a more defined look */
+            }
+
+            #descriptionLabel {
+                font-weight: normal;
+                font-size: 16px;
             }
         """)
 

@@ -27,6 +27,9 @@ class HomePage(QWidget):
         parent (QWidget, optional): The parent widget. Defaults to None.
     """
 
+    TITLE="Proyecto Estudio Guía de Onda Plano y Modos Acoplados"
+    DESCRIPTION = """Esta aplicación está diseñada para calcular los modos de propagación en una guía de onda plano.\nEl programa ofrece dos enfoques para el análisis: el método de rayos y el análisis ondulatorio.\nPara resolver las ecuaciones trascendentes que surgen al aplicar la teoría tanto de rayos como ondulatoria, implementamos el método numérico de bisección, lo que nos permite encontrar soluciones de manera eficiente y precisa.\nEste método es fundamental para encontrar los valores de los modos de propagación que no se pueden obtener directamente de manera analítica, al obtener los modos, se encuentran otros parámetros que son fundamentales para el estudio del guía de onda."""
+
     def __init__(self, parent, stack):
         """
         Initializes the HomePage with a title, description, and navigation button.
@@ -55,21 +58,19 @@ class HomePage(QWidget):
         layout.setSpacing(15)
 
         # Title Label
-        title_label = QLabel("My Project")
-        title_label.setFont(QFont("Arial", 20, QFont.Bold))
+        title_label = QLabel(self.TITLE)
+        title_label.setObjectName("titleLabel")
         layout.addWidget(title_label)
 
         # Description Label
-        description_label = QLabel(
-            "This project demonstrates a simple PySide6 GUI application.\n"
-            "Click the button below to go to the form view."
-        )
+        description_label = QLabel(self.DESCRIPTION)
+        description_label.setObjectName("descriptionLabel")
         description_label.setWordWrap(True)
         layout.addWidget(description_label)
 
         # Button to switch to the Form view
-        self.go_to_form_btn = QPushButton("Go to Form")
-        self.go_to_form_btn.setFixedWidth(100)
+        self.go_to_form_btn = QPushButton("Entrada de datos")
+        self.go_to_form_btn.setFixedWidth(150)
         self.go_to_form_btn.clicked.connect(self.go_to_form)
         layout.addWidget(self.go_to_form_btn)
 
