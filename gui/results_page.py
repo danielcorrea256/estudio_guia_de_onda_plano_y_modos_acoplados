@@ -45,8 +45,8 @@ class ResultsPage(QWidget):
         "ondulatorio": "Metodo ondulatorio"
     }
     EQUATIONS = {
-        "rayos": r"$2n_{co}k_0hcos(\alpha)-2\phi_s-2\phi_{cl}=2m\pi^2$",
-        "ondulatorio": r"$W^2+U^2 =(\frac{k_0 h}{2})^2(n_{co}^2 - n_{cl}^2)$"
+        "rayos": r"$2n_{co}k_0hcos(\theta)-2\phi_s-2\phi_{cl}=2m\pi^2$",
+        "ondulatorio": r"$W^2+U(\theta)^2 =(\frac{k_0 h}{2})^2(n_{co}^2 - n_{cl}^2)$"
     }
     VERTICAL_HEADERS = [
         r"$TE$",
