@@ -45,8 +45,8 @@ class ResultsPage(QWidget):
         "ondulatorio": "Metodo ondulatorio"
     }
     EQUATIONS = {
-        "rayos": r"$2n_{co}k_0hcos(\alpha)-2\phi_s-2\phi_{cl}=2m\pi^2$",
-        "ondulatorio": r"$W^2+U^2 =(\frac{k_0 h}{2})^2(n_{co}^2 - n_{cl}^2)$"
+        "rayos": r"$2n_{co}k_0hcos(\theta)-2\phi_s-2\phi_{cl}=2m\pi^2$",
+        "ondulatorio": r"$W^2+U(\theta)^2 =(\frac{k_0 h}{2})^2(n_{co}^2 - n_{cl}^2)$"
     }
     VERTICAL_HEADERS = [
         r"$TE$",
@@ -104,6 +104,10 @@ class ResultsPage(QWidget):
             equation = LatexLabel(self.EQUATIONS[m])
             layout_table.addWidget(equation)
 
+            description = QLabel("Vamos a encontrar valores para el angulo theta que resuelvan la siguiente ecuacion")
+            description.setWordWrap(True)
+            layout_table.addWidget(description)
+
             # Create table
             table = QTableWidget(self.N, self.M)
             
@@ -141,6 +145,11 @@ class ResultsPage(QWidget):
 
         main_layout = QVBoxLayout(self)
         main_layout.addLayout(tables_layout, stretch=0)
+
+        footnote = QLabel("Las columnas representan el valor para m que se toma")
+        footnote.setMinimumWidth(500)
+        footnote.setWordWrap(True)
+        main_layout.addWidget(footnote)
 
         # Back button, centered
         self.submit_btn = QPushButton("Back")
