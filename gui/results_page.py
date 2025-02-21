@@ -104,6 +104,10 @@ class ResultsPage(QWidget):
             equation = LatexLabel(self.EQUATIONS[m])
             layout_table.addWidget(equation)
 
+            description = QLabel("Vamos a encontrar valores para el angulo theta que resuelvan la siguiente ecuacion")
+            description.setWordWrap(True)
+            layout_table.addWidget(description)
+
             # Create table
             table = QTableWidget(self.N, self.M)
             
@@ -141,6 +145,11 @@ class ResultsPage(QWidget):
 
         main_layout = QVBoxLayout(self)
         main_layout.addLayout(tables_layout, stretch=0)
+
+        footnote = QLabel("Las columnas representan el valor para m que se toma")
+        footnote.setMinimumWidth(500)
+        footnote.setWordWrap(True)
+        main_layout.addWidget(footnote)
 
         # Back button, centered
         self.submit_btn = QPushButton("Back")
