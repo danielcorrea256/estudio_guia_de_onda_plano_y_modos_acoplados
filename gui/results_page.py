@@ -107,15 +107,15 @@ class ResultsPage(QWidget):
         tables_layout = QHBoxLayout()
         table_layouts = []
 
-        for m in self.METHODS:
+        for method in self.METHODS:
             layout_table = QVBoxLayout()
             
-            title = QLabel(self.TITLES[m])
+            title = QLabel(self.TITLES[method])
             title.setFont(QFont("Helvetica", 16, QFont.Bold))
             layout_table.addWidget(title)
 
             # Render equation with a larger fontsize
-            equation = LatexLabel(self.EQUATIONS[m], fontsize=12)
+            equation = LatexLabel(self.EQUATIONS[method], fontsize=12)
             layout_table.addWidget(equation)
 
             description = QLabel("Vamos a encontrar valores para el ángulo theta que resuelvan la siguiente ecuación")
@@ -127,8 +127,7 @@ class ResultsPage(QWidget):
             table.horizontalHeader().setIconSize(QSize(100, 40))
             table.verticalHeader().setIconSize(QSize(100, 40))
 
-            # Use our custom getHeaders function with an increased fontsize.
-            vertical_headers_items = self.getHeaders(self.VERTICAL_HEADERS, fontsize=12)
+            vertical_headers_items = self.getHeaders(self.VERTICAL_HEADERS, fontsize=20)
 
             for i in range(self.N):
                 table.setVerticalHeaderItem(i, vertical_headers_items[i])
@@ -144,21 +143,20 @@ class ResultsPage(QWidget):
             layout_table.addWidget(table)
             table_layouts.append(layout_table)
 
-            if m == "rayos":
+            # Fill table based on method
+            if method == "rayos":
                 self.fillTableRayos(table)
-            elif m == "ondulatorio":
+            elif method == "ondulatorio":
                 self.fillTableOndulatorio(table)
+                # Add interactivity for ondulatorio table:
+                # When a cell in the first two rows is clicked, show the graphic.
+                table.cellClicked.connect(self.handle_ondulatorio_cell_clicked)
 
         for layout in table_layouts:
             tables_layout.addLayout(layout)
 
         main_layout = QVBoxLayout(self)
         main_layout.addLayout(tables_layout, stretch=0)
-
-        footnote = QLabel("Las columnas representan el valor para m que se toma")
-        footnote.setMinimumWidth(500)
-        footnote.setWordWrap(True)
-        main_layout.addWidget(footnote)
 
         self.submit_btn = QPushButton("Back")
         self.submit_btn.setFixedWidth(100)
@@ -218,6 +216,27 @@ class ResultsPage(QWidget):
             table.setItem(1, m, QTableWidgetItem(str(alpha_TM)))
             table.setItem(2, m, QTableWidgetItem(str(n_eff_TE)))
             table.setItem(3, m, QTableWidgetItem(str(n_eff_TM)))
+
+    def handle_ondulatorio_cell_clicked(self, row, column):
+        """
+        Handles clicks on cells in the ondulatorio table.
+        For the first two rows (row 0 for TE, row 1 for TM), it generates a pop-up
+        graphic with two plots (E and H fields) corresponding to the clicked mode and m value.
+        """
+        # Only consider first two rows (row 0 for TE, row 1 for TM)
+        if row not in [0, 1]:
+            return
+
+        mode = "TE" if row == 0 else "TM"
+        m_index = column  # Each column corresponds to an m value
+
+        # Import the GraphicResults class and generate the plot.
+        # This new method 'plot_fields' returns one figure with two subplots (E and H).
+        from gui.GraphicResults import GraphicResults
+        gr = GraphicResults(self.n_co, self.n_cl, self.h, self.lambd)
+        fig = gr.plot_fields(mode, m_index)
+        fig.show()  
+
 
     def go_to_form(self):
         """
