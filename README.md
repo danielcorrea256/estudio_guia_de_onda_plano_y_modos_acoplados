@@ -26,8 +26,8 @@ Ensure you have **Python 3** installed.
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/yourrepository.git
-   cd yourrepository
+   git clone https://github.com/danielcorrea256/estudio_guia_de_onda_plano_y_modos_acoplados
+   cd estudio_guia_de_onda_plano_y_modos_acoplados
    ```
 
 2. Install dependencies:

@@ -6,6 +6,7 @@ numerical methods: "metodo de rayos" and "metodo ondulatorio." Each method's res
 are shown in separate tables with labeled columns and rows.
 """
 
+
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
@@ -17,6 +18,7 @@ from methods.metodo_ondulatorio import metodo_ondulatorio
 from methods.metodo_rayos import metodo_rayo
 from gui.latex_image_page import LatexLabel
 import math
+
 
 class TableGraphicsView(QGraphicsView):
     def __init__(self):
@@ -100,6 +102,7 @@ class ResultsPage(QWidget):
         self.stack = stack
         self.setup_ui()
 
+
     def setup_ui(self):
         """
         Sets up the UI layout, including tables for displaying results.
@@ -165,6 +168,7 @@ class ResultsPage(QWidget):
 
         self.setLayout(main_layout)
 
+
     def getHeaders(self, headers, fontsize=16):
         """
         Converts header LaTeX strings into QTableWidgetItems with larger icons.
@@ -176,6 +180,7 @@ class ResultsPage(QWidget):
             item.setIcon(QIcon(latex_pixmap))
             headers_items.append(item)
         return headers_items
+
 
     def fillTableRayos(self, table):
         """
@@ -190,6 +195,7 @@ class ResultsPage(QWidget):
         )
         self.fillTable(table, results_rayo)
 
+
     def fillTableOndulatorio(self, table):
         """
         Computes and fills the table with results from the ondulatorio method.
@@ -202,6 +208,7 @@ class ResultsPage(QWidget):
             ms=range(self.M)
         )
         self.fillTable(table, results_ondulatorio)
+
 
     def fillTable(self, table, results):
         """
@@ -216,6 +223,7 @@ class ResultsPage(QWidget):
             table.setItem(1, m, QTableWidgetItem(str(alpha_TM)))
             table.setItem(2, m, QTableWidgetItem(str(n_eff_TE)))
             table.setItem(3, m, QTableWidgetItem(str(n_eff_TM)))
+
 
     def handle_ondulatorio_cell_clicked(self, row, column):
         """

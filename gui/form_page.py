@@ -120,7 +120,8 @@ class FormPage(QWidget):
             self.stack.setCurrentWidget(self.results_page)
         except AssertionError:
             msg_box = QMessageBox.critical(self,"Error!", "The condition n_co > n_cl should hold.", QMessageBox.Ok)
-        except ValueError:
+        except ValueError as e:
+            print(e)
             msg_box = QMessageBox.critical(self,"Error!", "There are empty fields or invalid numbers, use dots for decimals.", QMessageBox.Ok)
 
 

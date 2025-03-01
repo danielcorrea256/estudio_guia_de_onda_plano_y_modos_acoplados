@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import math
 import numpy as np
-from methods.metodo_ondulatorio import metodo_ondulatorio
+from methods.metodo_ondulatorio import metodo_ondulatorio, get_W
 
 
 class GraphicResults:
@@ -14,7 +14,6 @@ class GraphicResults:
             n_cl (float): Cladding refractive index.
             h (float): Waveguide height.
             lambd (float): Wavelength.
-            k_0 (float, optional): Free-space wave number. If not provided, defaults to 2*pi/lambd.
             ms (iterable, optional): Mode indices to compute (default range(3)).
         """
         self.n_co = n_co
@@ -36,14 +35,18 @@ class GraphicResults:
         """
         Computes kappa given an angle theta (in degrees).
         """
-        return (2 * math.pi * self.n_co * math.cos(math.radians(theta))) / self.lambd
+        k0 = 2*math.pi / self.lambd
+        return (k0 * self.n_co * math.cos(math.radians(theta)))
 
 
-    def get_gamma(self, kappa):
+    def get_gamma(self, m, mode):
         """
         Computes gamma based on kappa and the waveguide height.
         """
-        return kappa * math.tan(kappa * self.h / 2)
+        U = self.get_kappa(self.solution[mode][m]) * self.h / 2
+        W = get_W(self.n_co, self.n_cl, m, mode)
+
+        return 2 * W(U) / self.h
 
 
     # TE field functions
@@ -53,7 +56,7 @@ class GraphicResults:
         C_1 = 1
         outside_function = lambda x: C_0 * math.exp(-gamma * (abs(x) - h / 2))
         inside_function = lambda x: C_1 * math.cos(kappa * x)
-        return lambda x: inside_function(x) if abs(x) <= h / 2 else outside_function(x)
+        return lambda x : inside_function(x) if abs(x) <= h / 2 else outside_function(x)
 
 
     def get_E_y_odd(self, gamma, kappa):
@@ -102,7 +105,6 @@ class GraphicResults:
         Returns:
             matplotlib.figure.Figure: The generated figure.
         """
-        import numpy as np
         if parity is None:
             parity = "even" if m % 2 == 0 else "odd"
         mode = mode.upper()
@@ -111,7 +113,7 @@ class GraphicResults:
         except Exception as e:
             raise ValueError(f"Solution for mode {mode} with m={m} not found: {e}")
         kappa = self.get_kappa(theta)
-        gamma = self.get_gamma(kappa)
+        gamma = self.get_gamma(m, mode)
 
         # For the electric field, use the E_y functions (for TE modes) and similarly for TM modes.
         # (Assuming the same functions can be used for both cases.)
@@ -149,6 +151,6 @@ if __name__ == "__main__":
     # Create a GraphicResults instance with some parameters.
     gr = GraphicResults(n_co=1.5, n_cl=1.0, h=1.0, lambd=1.0)
     # For example, plot the TE mode with m=0 (default parity even for m=0)
-    fig = gr.plot_mode("TE", m=0)
+    fig = gr.plot_fields("TE", m=0)
     # Save the figure
     fig.savefig("TE_mode_m0.png")
