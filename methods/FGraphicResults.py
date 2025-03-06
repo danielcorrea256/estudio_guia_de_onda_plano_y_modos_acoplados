@@ -11,7 +11,6 @@ class FGraphicResults:
             n_eff2 (float): Effective index 2.
             lambd (float): Wavelength.
         """
-        
         self.n_eff1 = n_eff1
         self.n_eff2 = n_eff2
         self.lambd = lambd
@@ -20,7 +19,10 @@ class FGraphicResults:
         self.beta2 = self.get_beta(n_eff2, lambd)
         # Delta is defined as half the difference between beta1 and beta2.
         self.delta = self.get_delta(self.beta1, self.beta2)
-    
+
+    def get_lc(self, psi):
+        return np.pi / 2*psi
+
     def get_beta(self, n_eff, lambd):
         """
         Computes beta = k0 * n_eff.
@@ -100,38 +102,65 @@ class FGraphicResults:
         """
         return F * np.sin(psi * z)**2
 
-    def plot_F_graphs(self, F_values=[0.2, 0.5], x_points=100):
+    def plot_F_graphs(self, F_value, x_points=100):
         """
-        Generates and returns a matplotlib figure with subplots for each provided F value.
-        Each subplot displays the curves for Pa and Pb versus x.
+        Generates and returns a matplotlib figure for a single F value.
+        The plot displays the curves for Pa(z) and Pb(z) versus z, and additional
+        information (using LaTeX math text) is shown below the graph.
         
         Args:
-            F_values (list, optional): List of F values to plot. Defaults to [0.2, 0.5].
-            x_points (int, optional): Number of x values for plotting. Defaults to 100.
-        
+            F_value (float): The F value to plot.
+            x_points (int, optional): Number of points for the x-axis. Defaults to 100.
+            
         Returns:
             matplotlib.figure.Figure: The generated figure.
         """
-        num_plots = len(F_values)
-        fig, axs = plt.subplots(1, num_plots, figsize=(6 * num_plots, 4))
-        # In case there is only one subplot, ensure axs is iterable.
-        if num_plots == 1:
-            axs = [axs]
-        for ax, F in zip(axs, F_values):
-            kappa = self.get_kappa(F)
-            psi = self.get_psi(kappa)
-            # Define x range: from 0 to 2*pi/psi.
-            x_range = np.linspace(0, 2 * np.pi / psi, x_points)
-            pa_values = self.Pa(x_range, psi, F)
-            pb_values = self.Pb(x_range, psi, F)
-            ax.plot(x_range, pa_values, label="Pa(z)")
-            ax.plot(x_range, pb_values, label="Pb(z)")
-            ax.set_xlabel("z")
-            ax.set_ylabel("")
-            ax.set_title(f"F = {F}")
-            ax.legend()
-        fig.tight_layout()
+        # Create a single subplot.
+        fig, ax = plt.subplots(figsize=(6, 4))
+        
+        # Compute kappa and psi for the given F value.
+        kappa = self.get_kappa(F_value)
+        psi = self.get_psi(kappa)
+        l_c = np.pi / 2 * psi  # note: check your parentheses if needed
+        
+        # Define the x range: from 0 to 2*pi/psi.
+        x_range = np.linspace(0, 2 * np.pi / psi, x_points)
+        
+        # Compute Pa and Pb values.
+        pa_values = self.Pa(x_range, psi, F_value)
+        pb_values = self.Pb(x_range, psi, F_value)
+        
+        # Plot the curves.
+        ax.plot(x_range, pa_values, label=r"$P_a(z)$")
+        ax.plot(x_range, pb_values, label=r"$P_b(z)$")
+        ax.set_xlabel("z")
+        ax.set_ylabel("")
+        ax.set_title(r"$F = " + f"{F_value}" + r"$")
+        ax.legend()
+        
+        # Adjust layout to leave extra space at the bottom.
+        fig.tight_layout(rect=(0, 0.3, 1, 0.95))
+        
+        # Prepare additional info text using LaTeX formatting.
+        additional_info = (
+            r"$n_{eff_1} = " + f"{self.n_eff1}" +
+            r",\quad n_{eff_2} = " + f"{self.n_eff2}" +
+            r",\quad \lambda = " + f"{self.lambd}" + r"$" + "\n" + r"$" + 
+            r"\quad \beta_1 = " + f"{self.beta1:.2f}" +
+            r",\quad \beta_2 = " + f"{self.beta2:.2f}" +
+            r",\quad \delta = " + f"{self.delta:.2f}" + r"$" + "\n" + r"$" + 
+            r"\quad \kappa = " + f"{kappa:.2f}" + 
+            r",\quad \psi = " + f"{psi:.2f}" + 
+            r",\quad L_c = " + f"{l_c:.2f}" + 
+            r"$"
+        )
+        
+        # Place the additional info text at the bottom center of the figure.
+        # Reduced font size (e.g. fontsize=8) and move it up a bit (e.g. y=0.05) for clarity.
+        fig.text(0.5, 0.1, additional_info, ha="center", va="bottom", fontsize=12)
+        
         return fig
+
 
 
 # --------------------------

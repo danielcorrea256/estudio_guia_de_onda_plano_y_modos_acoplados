@@ -136,7 +136,7 @@ class FResultsPage(QWidget):
         # Create an instance of FGraphicResults with the selected effective indices and wavelength.
         f_graphics = FGraphicResults(effective1, effective2, self.lambd)
         # Generate the plot for the selected F value.
-        fig = f_graphics.plot_F_graphs(F_values=[F_value])
+        fig = f_graphics.plot_F_graphs(F_value=F_value)
         fig.show()
 
     def go_back(self):
