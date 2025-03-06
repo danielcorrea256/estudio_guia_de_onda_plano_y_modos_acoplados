@@ -60,7 +60,8 @@ class MainWindow(QWidget):
                 font-size: 14px;
                 font-weight: bold;
                 border: 2px solid #1f2d3d; /* Even darker border for contrast */
-            }
+                margin: 0px;            
+               }
 
             QPushButton:hover {
                 background-color: #1f2d3d; /* Darker shade on hover */

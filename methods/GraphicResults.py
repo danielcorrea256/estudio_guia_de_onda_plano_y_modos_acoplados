@@ -57,13 +57,13 @@ class GraphicResults:
             if parity == 'even':
                 return kappa*math.tan(kappa*h/2)
             elif parity == 'odd':
-                return -1*kappa*math.atan(kappa*h/2)
+                return -1*kappa*1/math.tan(kappa*h/2)
 
         elif (mode == 'TM'):
             if parity == 'even':
                 return ((self.n_cl/self.n_co)**2)*kappa*math.tan(kappa*h/2)
             elif parity == 'odd':
-                return -1*((self.n_cl/self.n_co)**2)*kappa*math.atan(kappa*h/2)
+                return -1*((self.n_cl/self.n_co)**2)*kappa*1/math.tan(kappa*h/2)
         # return 2 * W(U) / self.h
 
 
@@ -72,14 +72,19 @@ class GraphicResults:
         h = self.h
         C_0 = math.cos(kappa * h / 2)
         C_1 = 1
+        print("C0 Ey even", C_0)
+        print("C1 Ey even", C_1)
         outside_function = lambda x: C_0 * math.exp(-gamma * (abs(x) - h / 2))
         inside_function = lambda x: C_1 * math.cos(kappa * x)
         return lambda x : inside_function(x) if abs(x) <= h / 2 else outside_function(x)
 
     def get_H_z_even(self, gamma,kappa):
         h = self.h
-        C_0 = math.cos(kappa * h / 2)
+        C_0 = (kappa / gamma) * math.sin(kappa * h / 2)
+        
         C_1 = 1
+        print("C0 Hz even", C_0)
+        print("C1 Hz even", C_1)
         left_function = lambda x: gamma * C_0 * math.exp(-gamma * (abs(x) - h / 2))
         center_function = lambda x: -kappa * C_1 * math.sin(kappa * x)
         right_function = lambda x: -gamma * C_0 * math.exp(-gamma * (abs(x) - h / 2))
@@ -87,8 +92,11 @@ class GraphicResults:
 
     def get_E_y_odd(self, gamma, kappa):
         h = self.h
-        C_0 = math.cos(kappa * h / 2)
+
+        C_0 = math.sin(kappa * h / 2)
         C_1 = 1
+        print("C0 Ey odd", C_0)
+        print("C1 Ey odd", C_1)
         left_function = lambda x: -C_0 * math.exp(gamma * (x + h / 2))
         center_function = lambda x: C_1 * math.sin(kappa * x)
         right_function = lambda x: C_0 * math.exp(-gamma * (x - h / 2))
@@ -96,19 +104,24 @@ class GraphicResults:
 
     def get_H_z_odd(self,gamma,kappa):
         h = self.h
-        C_0 = math.cos(kappa * h / 2)
+        C_0 = -(kappa / gamma) * math.cos(kappa * h / 2)
         C_1 = 1
+        print("C0 Hz odd", C_0)
+        print("C1 Hz odd", C_1)
         left_function = lambda x: -C_0 * gamma * math.exp(gamma*(x+h/2))
         center_function = lambda x: C_1 * kappa * math.cos(kappa * x)
-        right_function = lambda x: -C_0 * gamma * math.exp(gamma*(x-h/2))
+        right_function = lambda x: -C_0 * gamma * math.exp(-gamma*(x-h/2))
         return lambda x: left_function(x) if x < - h / 2 else center_function(x) if abs(x) <= h / 2 else right_function(x)
 
 
     # TM field functions
     def get_H_y_even(self, gamma, kappa):
         h = self.h
-        C_0 = (kappa / gamma) * math.sin(kappa * h / 2)
+        # C_0 = (kappa / gamma) * math.sin(kappa * h / 2)
+        C_0 = math.cos(kappa * h / 2)
         C_1 = 1
+        print("C0 Hy even", C_0)
+        print("C1 Hy even", C_1)
         outside_function = lambda x: C_0 * math.exp(-gamma * (abs(x) - h / 2))
         inside_function = lambda x: C_1 * math.cos(kappa * x)
         return lambda x: inside_function(x) if abs(x) <= h / 2 else outside_function(x)
@@ -117,6 +130,8 @@ class GraphicResults:
         h = self.h
         C_0 = (kappa / gamma) * math.sin(kappa * h / 2)
         C_1 = 1
+        print("C0 Ez even", C_0)
+        print("C1 Ez even", C_1)
         left_function = lambda x: gamma * C_0 * math.exp(-gamma * (abs(x) - h / 2))
         center_function = lambda x: -kappa * C_1 * math.sin(kappa * x)
         right_function = lambda x: -gamma * C_0 * math.exp(-gamma * (abs(x) - h / 2))
@@ -124,8 +139,11 @@ class GraphicResults:
 
     def get_H_y_odd(self, gamma, kappa):
         h = self.h
-        C_0 = (kappa / gamma) * math.sin(kappa * h / 2)
+        # C_0 = (kappa / gamma) * math.sin(kappa * h / 2)
+        C_0 = math.sin(kappa * h / 2)
         C_1 = 1
+        print("C0 Hy odd", C_0)
+        print("C1 Hy odd", C_1)
         left_function = lambda x: -C_0 * math.exp(gamma * (x + h / 2))
         center_function = lambda x: C_1 * math.sin(kappa * x)
         right_function = lambda x: C_0 * math.exp(-gamma * (x - h / 2))
@@ -133,9 +151,10 @@ class GraphicResults:
 
     def get_E_z_odd(self, gamma, kappa):
         h = self.h
-        C_0 = (kappa / gamma) * math.sin(kappa * h / 2)
+        C_0 = -(kappa / gamma) * math.cos(kappa * h / 2)
         C_1 = 1
-
+        print("C0 Ez odd", C_0)
+        print("C1 Ez odd", C_1)
         left_function = lambda x: -gamma * C_0 * math.exp(gamma * (x + h / 2))
         center_function = lambda x: kappa * C_1 * math.cos(kappa * x)
         right_function = lambda x: -gamma * C_0 * math.exp(-gamma * (x - h / 2))
@@ -167,6 +186,9 @@ class GraphicResults:
         kappa = self.get_kappa(theta)
         gamma = self.get_gamma(kappa, 'TE', parity)
 
+        print("kappa", kappa) 
+        print("gamma", gamma)
+
         # For the electric field, use the E_y functions (for TE modes) and similarly for TM modes.
 
         if mode == "TE":
@@ -179,17 +201,18 @@ class GraphicResults:
                 E_func = self.get_E_y_odd(gamma, kappa)
                 H_func = self.get_H_z_odd(gamma, kappa)
         elif mode == "TM":
-            first_label = r"$H_y(x)$"
-            second_label = r"$\varepsilon_z(x)$"
+            first_label = r"$\varepsilon_z(x)$"
+            second_label = r"$H_y(x)$"
             if parity.lower() == "even":
-                H_func = self.get_H_y_even(gamma, kappa)
                 E_func = self.get_E_z_even(gamma, kappa)
+                H_func = self.get_H_y_even(gamma, kappa)
             elif parity.lower() == "odd":
-                H_func = self.get_H_y_odd(gamma, kappa)
                 E_func = self.get_E_z_odd(gamma, kappa)
+                H_func = self.get_H_y_odd(gamma, kappa)
         
         if x_range is None:
-            x_range = np.linspace(-2, 2, 100)
+            x_range = np.linspace(-2 * self.h, 2 * self.h, 100)
+
         E_vals = [E_func(x) for x in x_range]
         H_vals = [H_func(x) for x in x_range]
 
@@ -197,12 +220,12 @@ class GraphicResults:
         ax1.plot(x_range, E_vals)
         ax1.set_xlabel('x')
         ax1.set_ylabel(first_label)
-        ax1.set_title(f"{mode} mode {'E' if mode == 'TE' else 'H'}-field (m={m}, {parity})")
+        ax1.set_title(f"{mode} mode {'E' if mode == 'TE' else 'E'}-field (m={m}, {parity})")
 
         ax2.plot(x_range, H_vals)
         ax2.set_xlabel('x')
         ax2.set_ylabel(second_label)
-        ax2.set_title(f"{mode} mode {'H' if mode == 'TE' else 'E'}-field (m={m}, {parity})")
+        ax2.set_title(f"{mode} mode {'H' if mode == 'TE' else 'H'}-field (m={m}, {parity})")
 
         fig.tight_layout()
         return fig

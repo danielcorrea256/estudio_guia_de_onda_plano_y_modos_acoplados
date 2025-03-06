@@ -1,5 +1,8 @@
 from scipy.optimize import root_scalar
+import matplotlib.pyplot as plt
+import numpy as np
 import math
+
 
 def phi(n_co, n_t, modo):
     cociente = n_co**2 / n_t**2
@@ -20,7 +23,7 @@ def funcion_rayo(n_co, n_cl, h, lambd, m, modo):
 
     return z  # Buscamos la raíz de esta función
 
-def metodo_rayo(n_co, n_cl, h, lambd, ms):
+def metodo_rayo(n_co, n_cl, h, lambd, ms, debug=False):
     TEs = {}
     TMs = {}
 
@@ -29,6 +32,15 @@ def metodo_rayo(n_co, n_cl, h, lambd, ms):
     for m in ms:
         # resultado para modo TE
         f_TE = funcion_rayo(n_co=n_co,n_cl=n_cl,h=h, lambd=lambd, m=m, modo='TE')
+        
+        if debug:
+            theta_values = np.linspace(theta_c, math.pi / 2)
+            f_TE_values = [f_TE(theta) for theta in theta_values]
+            plt.plot(theta_values, f_TE_values)
+            #plt.ylim(-1, 1)
+            plt.axhline(0, color='black', linewidth=1)  # Adds an x-axis at y = 0
+            plt.show()
+
         theta_TE = root_scalar(f_TE,method="bisect",bracket=[theta_c,math.pi/2]).root
         TEs[m] = math.degrees(theta_TE)
 
@@ -38,3 +50,7 @@ def metodo_rayo(n_co, n_cl, h, lambd, ms):
         TMs[m] = math.degrees(theta_TM)
 
     return {'TE': TEs, 'TM': TMs}
+
+
+if __name__ == "__main__":
+    metodo_rayo(1.5, 1, 1, 10, [1], True)

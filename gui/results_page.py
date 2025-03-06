@@ -17,6 +17,8 @@ from PySide6.QtGui import QBrush, QColor, QFont, QIcon
 from methods.metodo_ondulatorio import metodo_ondulatorio
 from methods.metodo_rayos import metodo_rayo
 from gui.latex_image_page import LatexLabel
+from gui.metodos_acoplados_page import MetodosAcopladosPage
+from methods.GraphicResults import GraphicResults
 import math
 
 
@@ -100,6 +102,10 @@ class ResultsPage(QWidget):
         self.h = h
         self.lambd = lambd
         self.stack = stack
+        self.alpha_TE = [0] * 3
+        self.alpha_TM = [0] * 3
+        self.n_eff_TE = [0] * 3
+        self.n_eff_TM = [0] * 3
         self.setup_ui()
 
 
@@ -161,10 +167,25 @@ class ResultsPage(QWidget):
         main_layout = QVBoxLayout(self)
         main_layout.addLayout(tables_layout, stretch=0)
 
+        # Create a horizontal layout to hold both buttons side by side.
+        buttons_layout = QHBoxLayout()
+        buttons_layout.setSpacing(10)  # Reduce spacing between buttons
+        buttons_layout.setContentsMargins(0, 0, 0, 0)  # Reduce layout margins
+
+        # Create the "Back" button.
         self.submit_btn = QPushButton("Back")
-        self.submit_btn.setFixedWidth(100)
-        main_layout.addWidget(self.submit_btn, alignment=Qt.AlignCenter)
+        self.submit_btn.setFixedWidth(100)  # Fixed width for "Back"
+        buttons_layout.addWidget(self.submit_btn)
         self.submit_btn.clicked.connect(self.go_to_form)
+
+        # Create the "Metodos Acoplados" button with increased width.
+        self.metodos_btn = QPushButton("Metodos Acoplados")
+        self.metodos_btn.setFixedWidth(200)  # Increased width so the text fits
+        buttons_layout.addWidget(self.metodos_btn)
+        self.metodos_btn.clicked.connect(self.go_to_metodos_acoplados)
+
+        # Add the horizontal layout containing the buttons to the main layout of the page.
+        main_layout.addLayout(buttons_layout)
 
         self.setLayout(main_layout)
 
@@ -186,28 +207,28 @@ class ResultsPage(QWidget):
         """
         Computes and fills the table with results from the rayos method.
         """
-        results_rayo = metodo_rayo(
+        self.results_rayo = metodo_rayo(
             n_co=self.n_co,
             n_cl=self.n_cl,
             h=self.h,
             lambd=self.lambd,
             ms=range(self.M)
         )
-        self.fillTable(table, results_rayo)
+        self.fillTable(table, self.results_rayo)
 
 
     def fillTableOndulatorio(self, table):
         """
         Computes and fills the table with results from the ondulatorio method.
         """
-        results_ondulatorio = metodo_ondulatorio(
+        self.results_ondulatorio = metodo_ondulatorio(
             n_co=self.n_co,
             n_cl=self.n_cl,
             h=self.h,
             lambd=self.lambd,
             ms=range(self.M)
         )
-        self.fillTable(table, results_ondulatorio)
+        self.fillTable(table, self.results_ondulatorio)
 
 
     def fillTable(self, table, results):
@@ -215,14 +236,14 @@ class ResultsPage(QWidget):
         Populates the table with numerical results.
         """
         for m in range(self.M):
-            alpha_TE = round(results["TE"][m], 1)
-            alpha_TM = round(results["TM"][m], 1)
-            n_eff_TE = round(math.sin(math.radians(alpha_TE)) * self.n_co, 2)
-            n_eff_TM = round(math.sin(math.radians(alpha_TM)) * self.n_co, 2)
-            table.setItem(0, m, QTableWidgetItem(str(alpha_TE)))
-            table.setItem(1, m, QTableWidgetItem(str(alpha_TM)))
-            table.setItem(2, m, QTableWidgetItem(str(n_eff_TE)))
-            table.setItem(3, m, QTableWidgetItem(str(n_eff_TM)))
+            self.alpha_TE[m] = round(results["TE"][m], 1)
+            self.alpha_TM[m] = round(results["TM"][m], 1)
+            self.n_eff_TE[m] = round(math.sin(math.radians(self.alpha_TE[m])) * self.n_co, 2)
+            self.n_eff_TM[m] = round(math.sin(math.radians(self.alpha_TM[m])) * self.n_co, 2)
+            table.setItem(0, m, QTableWidgetItem(str(self.alpha_TE[m])))
+            table.setItem(1, m, QTableWidgetItem(str(self.alpha_TM[m])))
+            table.setItem(2, m, QTableWidgetItem(str(self.n_eff_TE[m])))
+            table.setItem(3, m, QTableWidgetItem(str(self.n_eff_TM[m])))
 
 
     def handle_ondulatorio_cell_clicked(self, row, column):
@@ -240,7 +261,6 @@ class ResultsPage(QWidget):
 
         # Import the GraphicResults class and generate the plot.
         # This new method 'plot_fields' returns one figure with two subplots (E and H).
-        from gui.GraphicResults import GraphicResults
         gr = GraphicResults(self.n_co, self.n_cl, self.h, self.lambd)
         fig = gr.plot_fields(mode, m_index)
         fig.show()  
@@ -251,3 +271,16 @@ class ResultsPage(QWidget):
         Navigates back to the form page.
         """
         self.stack.removeWidget(self)
+
+
+    def go_to_metodos_acoplados(self):
+        """
+        Navigates to the Metodos Acoplados page.
+        """
+        metodos_page = MetodosAcopladosPage(self, self.stack)
+    
+        # Add the new page to the stack.
+        self.stack.addWidget(metodos_page)
+        
+        # Set the current widget in the stack to the new Metodos Acoplados page.
+        self.stack.setCurrentWidget(metodos_page)
