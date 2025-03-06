@@ -277,7 +277,7 @@ class ResultsPage(QWidget):
         """
         Navigates to the Metodos Acoplados page.
         """
-        metodos_page = MetodosAcopladosPage(self, self.stack)
+        metodos_page = MetodosAcopladosPage(self, self.stack, self.n_eff_TE, self.n_eff_TM, self.lambd)
     
         # Add the new page to the stack.
         self.stack.addWidget(metodos_page)

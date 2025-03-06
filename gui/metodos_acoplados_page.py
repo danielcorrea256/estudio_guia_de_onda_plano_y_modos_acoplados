@@ -11,7 +11,7 @@ class MetodosAcopladosPage(QWidget):
     includes a 'Back' button to return to the previous page and a 'Graphics'
     button intended for showing graphics (placeholder functionality).
     """
-    def __init__(self, parent, stack):
+    def __init__(self, parent, stack, n_eff_TE, n_eff_TM, lambd):
         """
         Initializes the MetodosAcopladosPage.
 
@@ -21,6 +21,9 @@ class MetodosAcopladosPage(QWidget):
         """
         super().__init__(parent)
         self.stack = stack
+        self.n_eff_TE = n_eff_TE
+        self.n_eff_TM = n_eff_TM
+        self.lambd = lambd
         self.setup_ui()
 
     def setup_ui(self):
@@ -74,9 +77,7 @@ class MetodosAcopladosPage(QWidget):
         self.stack.removeWidget(self)
 
     def show_graphics(self):
-        f_values = [0.2, 0.5]
-        m_values = [0, 1, 2]
-        f_results_page = FResultsPage(self, self.stack)
+        f_results_page = FResultsPage(self, self.stack, self.n_eff_TE, self.n_eff_TM, self.lambd)
 
         # Add the new page to the stack.
         self.stack.addWidget(f_results_page)
