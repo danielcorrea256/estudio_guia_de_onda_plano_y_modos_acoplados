@@ -122,8 +122,7 @@ class FormPage(QWidget):
             msg_box = QMessageBox.critical(self,"Error!", "The condition n_co > n_cl should hold.", QMessageBox.Ok)
         except ValueError as e:
             print(e)
-            msg_box = QMessageBox.critical(self,"Error!", "There are empty fields or invalid numbers, use dots for decimals.", QMessageBox.Ok)
-
+            msg_box = QMessageBox.critical(self,"Error!", "The current values are not valid, check your input", QMessageBox.Ok)
 
     def go_to_homepage(self):
         self.stack.removeWidget(self)

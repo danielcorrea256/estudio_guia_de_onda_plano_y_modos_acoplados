@@ -106,7 +106,7 @@ class FGraphicResults:
         """
         Generates and returns a matplotlib figure for a single F value.
         The plot displays the curves for Pa(z) and Pb(z) versus z, and additional
-        information (using LaTeX math text) is shown below the graph.
+        information is shown below the graph.
         
         Args:
             F_value (float): The F value to plot.
@@ -121,10 +121,16 @@ class FGraphicResults:
         # Compute kappa and psi for the given F value.
         kappa = self.get_kappa(F_value)
         psi = self.get_psi(kappa)
-        l_c = np.pi / 2 * psi  # note: check your parentheses if needed
+        l_c = np.pi / 2 * psi  # ensure correct grouping if needed
         
-        # Define the x range: from 0 to 2*pi/psi.
-        x_range = np.linspace(0, 2 * np.pi / psi, x_points)
+        # Define the original maximum x-value as 2*pi/psi.
+        x_max_original = 2 * np.pi / psi
+        # Determine N such that N*(pi/2) >= 2*pi/psi.
+        N = int(np.ceil(x_max_original / (np.pi/2)))
+        max_tick = N * (np.pi/2)
+        
+        # Define the x range from 0 to max_tick.
+        x_range = np.linspace(0, max_tick, x_points)
         
         # Compute Pa and Pb values.
         pa_values = self.Pa(x_range, psi, F_value)
@@ -138,8 +144,26 @@ class FGraphicResults:
         ax.set_title(r"$F = " + f"{F_value}" + r"$")
         ax.legend()
         
+        # Set x-ticks at increments of pi/2 (0, π/2, π, 3π/2, ... up to max_tick).
+        tick_positions = [n * (np.pi/2) for n in range(N + 1)]
+        tick_labels = []
+        for n in range(N + 1):
+            if n == 0:
+                tick_labels.append("0")
+            elif n == 1:
+                tick_labels.append(r"$\pi/2$")
+            elif n == 2:
+                tick_labels.append(r"$\pi$")
+            else:
+                tick_labels.append(r"$%d\pi/2$" % n)
+        ax.set_xticks(tick_positions)
+        ax.set_xticklabels(tick_labels)
+        
         # Adjust layout to leave extra space at the bottom.
         fig.tight_layout(rect=(0, 0.3, 1, 0.95))
+        
+        # Place a title for the additional info using fontweight.
+        fig.text(0.5, 0.2, "Parameters", ha="center", va="bottom", fontsize=12, fontweight='bold')
         
         # Prepare additional info text using LaTeX formatting.
         additional_info = (
@@ -149,15 +173,13 @@ class FGraphicResults:
             r"\quad \beta_1 = " + f"{self.beta1:.2f}" +
             r",\quad \beta_2 = " + f"{self.beta2:.2f}" +
             r",\quad \delta = " + f"{self.delta:.2f}" + r"$" + "\n" + r"$" + 
-            r"\quad \kappa = " + f"{kappa:.2f}" + 
-            r",\quad \psi = " + f"{psi:.2f}" + 
-            r",\quad L_c = " + f"{l_c:.2f}" + 
-            r"$"
+            r"\quad \kappa = " + f"{kappa:.2f}" +
+            r",\quad \psi = " + f"{psi:.2f}" +
+            r",\quad L_c = " + f"{l_c:.2f}" + r"$"
         )
         
-        # Place the additional info text at the bottom center of the figure.
-        # Reduced font size (e.g. fontsize=8) and move it up a bit (e.g. y=0.05) for clarity.
-        fig.text(0.5, 0.1, additional_info, ha="center", va="bottom", fontsize=12)
+        # Place the additional info text below the title.
+        fig.text(0.5, 0.05, additional_info, ha="center", va="bottom", fontsize=10)
         
         return fig
 

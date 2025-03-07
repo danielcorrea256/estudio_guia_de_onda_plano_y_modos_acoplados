@@ -12,6 +12,7 @@ using QStackedWidget. It allows navigation between:
 from PySide6.QtWidgets import QWidget, QStackedWidget, QVBoxLayout
 from gui.home_page import HomePage
 from gui.results_page import ResultsPage
+from PySide6.QtGui import QIcon
 
 
 class MainWindow(QWidget):
@@ -31,7 +32,8 @@ class MainWindow(QWidget):
         Initializes the main window and sets up the UI components.
         """
         super().__init__()
-        self.setWindowTitle("Multi-View Application")
+        self.setWindowTitle("egdopyma")
+        self.setWindowIcon(QIcon("logo.png"))  # Change to your icon path
         self.setMinimumSize(800, 600)
 
         # Create a stacked widget to manage multiple pages
@@ -140,6 +142,8 @@ class MainWindow(QWidget):
             #descriptionLabel {
                 font-weight: normal;
                 font-size: 16px;
+                line-height: 1.5em;
+                margin-bottom: 12px;
             }
         """)
 
