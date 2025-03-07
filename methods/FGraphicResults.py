@@ -1,5 +1,8 @@
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
+
+matplotlib.use('qtagg')
 
 class FGraphicResults:
     def __init__(self, n_eff1, n_eff2, lambd):
@@ -102,6 +105,7 @@ class FGraphicResults:
         """
         return F * np.sin(psi * z)**2
 
+
     def plot_F_graphs(self, F_value, x_points=100):
         """
         Generates and returns a matplotlib figure for a single F value.
@@ -115,72 +119,74 @@ class FGraphicResults:
         Returns:
             matplotlib.figure.Figure: The generated figure.
         """
-        # Create a single subplot.
-        fig, ax = plt.subplots(figsize=(6, 4))
-        
-        # Compute kappa and psi for the given F value.
+        # Create a figure and axis
+        fig, ax = plt.subplots(figsize=(7, 4))
+
+        # Compute kappa and psi for the given F value
         kappa = self.get_kappa(F_value)
         psi = self.get_psi(kappa)
-        l_c = np.pi / 2 * psi  # ensure correct grouping if needed
-        
-        # Define the original maximum x-value as 2*pi/psi.
-        x_max_original = 2 * np.pi / psi
-        # Determine N such that N*(pi/2) >= 2*pi/psi.
-        N = int(np.ceil(x_max_original / (np.pi/2)))
-        max_tick = N * (np.pi/2)
-        
-        # Define the x range from 0 to max_tick.
+        l_c = (np.pi / 2) * psi  # Coupling length
+
+        # Determine the maximum x-value in multiples of pi/2
+        x_max_original = (2 * np.pi) / psi
+        N = int(np.ceil(x_max_original / (np.pi / 2)))
+        max_tick = N * (np.pi / 2)
+
+        # Generate x range and compute Pa/Pb
         x_range = np.linspace(0, max_tick, x_points)
-        
-        # Compute Pa and Pb values.
         pa_values = self.Pa(x_range, psi, F_value)
         pb_values = self.Pb(x_range, psi, F_value)
-        
-        # Plot the curves.
-        ax.plot(x_range, pa_values, label=r"$P_a(z)$")
-        ax.plot(x_range, pb_values, label=r"$P_b(z)$")
-        ax.set_xlabel("z")
-        ax.set_ylabel("")
-        ax.set_title(r"$F = " + f"{F_value}" + r"$")
-        ax.legend()
-        
-        # Set x-ticks at increments of pi/2 (0, π/2, π, 3π/2, ... up to max_tick).
-        tick_positions = [n * (np.pi/2) for n in range(N + 1)]
+
+        # Plot Pa and Pb with distinct styles
+        ax.plot(x_range, pa_values, label=r"$P_a(z)$", color="royalblue", linewidth=2)
+        ax.plot(x_range, pb_values, label=r"$P_b(z)$", color="crimson", linewidth=2)
+
+        ax.set_xlabel("z", fontsize=11)
+        ax.set_ylabel("", fontsize=11)
+        ax.set_title(rf"$F = {F_value}$", fontsize=13)
+        ax.legend(fontsize=10)
+
+        # Enable grid for clarity
+        ax.grid(True, linestyle=":", color="gray", alpha=0.3)
+
+        # Set x-ticks at increments of pi/2
+        tick_positions = [n * (np.pi / 2) for n in range(N + 1)]
         tick_labels = []
         for n in range(N + 1):
             if n == 0:
                 tick_labels.append("0")
             elif n == 1:
-                tick_labels.append(r"$\pi/2$")
+                tick_labels.append(r"$\frac{\pi}{2}$")
             elif n == 2:
                 tick_labels.append(r"$\pi$")
             else:
-                tick_labels.append(r"$%d\pi/2$" % n)
+                tick_labels.append(rf"${n}\frac{{\pi}}{{2}}$")
+
         ax.set_xticks(tick_positions)
-        ax.set_xticklabels(tick_labels)
-        
-        # Adjust layout to leave extra space at the bottom.
+        ax.set_xticklabels(tick_labels, fontsize=10)
+
+        # Tight layout, reserving space at the bottom for additional info
         fig.tight_layout(rect=(0, 0.3, 1, 0.95))
-        
-        # Place a title for the additional info using fontweight.
-        fig.text(0.5, 0.2, "Parameters", ha="center", va="bottom", fontsize=12, fontweight='bold')
-        
-        # Prepare additional info text using LaTeX formatting.
+
+        # Place a bold 'Parameters' title below the main plot
+        fig.text(0.5, 0.2, "Parameters", ha="center", va="bottom", fontsize=12, fontweight="bold")
+
+        # Additional info text using LaTeX formatting
         additional_info = (
             r"$n_{eff_1} = " + f"{self.n_eff1}" +
             r",\quad n_{eff_2} = " + f"{self.n_eff2}" +
-            r",\quad \lambda = " + f"{self.lambd}" + r"$" + "\n" + r"$" + 
+            r",\quad \lambda = " + f"{self.lambd}" + r"$" + "\n" + r"$" +
             r"\quad \beta_1 = " + f"{self.beta1:.2f}" +
             r",\quad \beta_2 = " + f"{self.beta2:.2f}" +
-            r",\quad \delta = " + f"{self.delta:.2f}" + r"$" + "\n" + r"$" + 
+            r",\quad \delta = " + f"{self.delta:.2f}" + r"$" + "\n" + r"$" +
             r"\quad \kappa = " + f"{kappa:.2f}" +
             r",\quad \psi = " + f"{psi:.2f}" +
             r",\quad L_c = " + f"{l_c:.2f}" + r"$"
         )
-        
-        # Place the additional info text below the title.
+
+        # Place the additional info text below the 'Parameters' title
         fig.text(0.5, 0.05, additional_info, ha="center", va="bottom", fontsize=10)
-        
+
         return fig
 
 

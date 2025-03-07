@@ -37,13 +37,13 @@ class FResultsPage(QWidget):
         main_layout = QVBoxLayout(self)
 
         # Title label (object name picks up #titleLabel style)
-        title = QLabel("F Results")
+        title = QLabel("Resultados para el parámetro F")
         title.setObjectName("titleLabel")
         title.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(title)
 
         # Description label (object name picks up #descriptionLabel style)
-        description = QLabel("Click on a cell to view the plot for the corresponding F value and mode comparison.")
+        description = QLabel("En esta sección se muestran las curvas de Pa(z) y Pb(z) al fijar el valor de F, lo que permite analizar cómo se transfiere la energía en el acoplamiento óptico entre guías de ondas paralelas. Estos resultados facilitan la comprensión de la eficiencia con la que la luz puede ser controlada y dirigida en dispositivos fotónicos, aspecto esencial para la optimización de circuitos integrados ópticos y acopladores.")
         description.setObjectName("descriptionLabel")
         description.setWordWrap(True)
         main_layout.addWidget(description)

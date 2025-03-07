@@ -1,8 +1,11 @@
 import matplotlib.pyplot as plt
+import matplotlib
 import math
 import numpy as np
 import methods.field_functions as ff
 from methods.metodo_ondulatorio import metodo_ondulatorio
+
+matplotlib.use('qtagg')
 
 class GraphicResults:
     def __init__(self, n_co, n_cl, h, lambd, ms=range(3)):
@@ -55,8 +58,8 @@ class GraphicResults:
     def plot_fields(self, mode, m, parity=None, x_range=None):
         """
         Generates and returns a matplotlib figure with two subplots:
-          - Left: Electric field (E)
-          - Right: Magnetic field (H)
+        - Left: Electric field (E)
+        - Right: Magnetic field (H)
         
         Args:
             mode (str): "TE" or "TM".
@@ -67,6 +70,7 @@ class GraphicResults:
         Returns:
             matplotlib.figure.Figure: The generated figure.
         """
+
         if parity is None:
             parity = "even" if m % 2 == 0 else "odd"
         mode = mode.upper()
@@ -77,8 +81,8 @@ class GraphicResults:
         
         kappa_val = self.get_kappa(theta)
         gamma_val = self.get_gamma(kappa_val, mode, parity)
-        
-        # Select field functions based on mode and parity.
+
+        # Select field functions based on mode and parity
         if mode == "TE":
             first_label = r"$\varepsilon_y(x)$"
             second_label = r"$H_z(x)$"
@@ -88,7 +92,7 @@ class GraphicResults:
             else:
                 E_func = ff.get_E_y_odd(self.h, gamma_val, kappa_val)
                 H_func = ff.get_H_z_odd(self.h, gamma_val, kappa_val)
-        elif mode == "TM":
+        else:  # mode == "TM"
             first_label = r"$\varepsilon_z(x)$"
             second_label = r"$H_y(x)$"
             if parity.lower() == "even":
@@ -97,26 +101,36 @@ class GraphicResults:
             else:
                 E_func = ff.get_E_z_odd(self.h, gamma_val, kappa_val)
                 H_func = ff.get_H_y_odd(self.h, gamma_val, kappa_val)
-        
+
         if x_range is None:
             x_range = np.linspace(-2 * self.h, 2 * self.h, 100)
-        
+
         E_vals = [E_func(x) for x in x_range]
         H_vals = [H_func(x) for x in x_range]
-        
+
+        # Create subplots with a larger figure size
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
-        ax1.plot(x_range, E_vals)
-        ax1.set_xlabel('x')
-        ax1.set_ylabel(first_label)
-        ax1.set_title(f"{mode} mode E-field (m={m}, {parity})")
-        
-        ax2.plot(x_range, H_vals)
-        ax2.set_xlabel('x')
-        ax2.set_ylabel(second_label)
-        ax2.set_title(f"{mode} mode H-field (m={m}, {parity})")
-        
+
+        # Plot E field
+        ax1.plot(x_range, E_vals, color="royalblue", linewidth=2)
+        ax1.set_xlabel("x", fontsize=12)
+        ax1.set_ylabel(first_label, fontsize=12)
+        ax1.set_title(f"{mode} mode E-field (m={m}, {parity})", fontsize=14)
+        ax1.grid(True, linestyle=":", color="gray", alpha=0.3)
+
+        # Plot H field
+        ax2.plot(x_range, H_vals, color="crimson", linewidth=2)
+        ax2.set_xlabel("x", fontsize=12)
+        ax2.set_ylabel(second_label, fontsize=12)
+        ax2.set_title(f"{mode} mode H-field (m={m}, {parity})", fontsize=14)
+        ax2.grid(True, linestyle=":", color="gray", alpha=0.3)
+
+        # Optional: add a figure-wide title
+        # fig.suptitle("Field Distributions for TE/TM Modes", fontsize=16, fontweight="bold")
+
         fig.tight_layout()
         return fig
+
 
 # ---------------------------
 # Example usage:
