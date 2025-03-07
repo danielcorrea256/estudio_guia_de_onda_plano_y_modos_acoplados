@@ -1,5 +1,5 @@
 """
-MetodosAcopladosPage Module
+gui.MetodosAcopladosPage Module
 
 This module defines the `MetodosAcopladosPage` class, which displays a description 
 and a set of LaTeX equations related to acoplados (coupled waveguides). The page 

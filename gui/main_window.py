@@ -1,5 +1,5 @@
 """
-Main window for the multi-view PySide6 application.
+gui.Main window for the multi-view PySide6 application.
 
 This module defines the MainWindow class, which manages multiple pages 
 using QStackedWidget. It allows navigation between:

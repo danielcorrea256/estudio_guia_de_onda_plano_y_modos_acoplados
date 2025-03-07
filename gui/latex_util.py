@@ -1,5 +1,5 @@
 """
-latex_util Module
+gui.latex_util Module
 
 This module provides the `LatexLabel` class, a PySide6 `QLabel` subclass 
 for rendering LaTeX math expressions. It uses Matplotlib to convert LaTeX 

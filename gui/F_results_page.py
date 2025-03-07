@@ -1,5 +1,5 @@
 """
-FResultsPage Module
+gui.FResultsPage Module
 
 This module defines the FResultsPage class, which displays results based on a fixed F value
 for optical waveguide mode comparisons. Each row of the table corresponds to a different
@@ -21,10 +21,7 @@ from PySide6.QtWidgets import (
     QPushButton, QSizePolicy
 )
 from PySide6.QtCore import Qt
-from gui.latex_util import LatexLabel
 from methods.FGraphicResults import FGraphicResults
-
-
 
 class FResultsPage(QWidget):
     """

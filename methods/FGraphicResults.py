@@ -1,5 +1,5 @@
 """
-FGraphicResults Module
+methods.FGraphicResults Module
 
 This module defines the `FGraphicResults` class, which calculates and plots 
 the optical coupling phenomenon in a two-waveguide system, parameterized by 

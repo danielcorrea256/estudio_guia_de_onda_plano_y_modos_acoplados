@@ -1,5 +1,5 @@
 """
-FormPage Module
+gui.FormPage Module
 
 This module defines the `FormPage` class, which represents a user input form 
 for numerical parameters, using both standard QLabel and LaTeX-rendered labels.
