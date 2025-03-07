@@ -1,6 +1,7 @@
+import matplotlib.pyplot as plt
 import scipy.optimize
+import numpy as np
 import math
-
 
 def get_W(n_co, n_cl, m, modo):
     """
@@ -77,7 +78,7 @@ def funcion_ondulatoria(n_co, n_cl, h, lambd, m, modo):
     return z
 
 
-def metodo_ondulatorio(n_co, n_cl, h, lambd, ms):
+def metodo_ondulatorio(n_co, n_cl, h, lambd, ms, debug=False):
     """
     
     n_co > n_cl
@@ -113,9 +114,17 @@ def metodo_ondulatorio(n_co, n_cl, h, lambd, ms):
         # 1. Tenemos una expresion f_TE(U) donde al igualar a 0, tenemos los valores de U permitidos
         f_TE = funcion_ondulatoria(n_co, n_cl, h, lambd, m, "TE") 
         
+        if debug:
+            theta_values = np.linspace(l, r)
+            f_TE_values = [np.log(f_TE(theta)) for theta in theta_values]
+            plt.plot(theta_values, f_TE_values)
+            #plt.ylim(-1, 1)
+            plt.axhline(1, color='black', linewidth=1)  # Adds an x-axis at y = 0
+            plt.show()
+
         # 2. Valor valido para U en la ecuacion original
         U_TE = scipy.optimize.root_scalar(f_TE, method="bisect", bracket=interval).root # raiz de f_TE
-        
+
         # 3. Calcular el angulo de incidencia
         theta_TE = math.acos((U_TE * lambd) / (math.pi * n_co)) 
         
@@ -130,3 +139,7 @@ def metodo_ondulatorio(n_co, n_cl, h, lambd, ms):
 
     # Retornar los ángulos calculados para los modos TE y TM
     return {'TE': TEs, 'TM': TMs}
+
+
+if __name__ == "__main__":
+    metodo_ondulatorio(1.5, 1, 1, 10, [0], True)
