@@ -1,26 +1,18 @@
-"""
-ResultsPage Module
-
-This module defines the ResultsPage class, which displays the results of two
-numerical methods: "metodo de rayos" and "metodo ondulatorio." Each method's results
-are shown in separate tables with labeled columns and rows.
-"""
-
-
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QTableWidget, QTableWidgetItem, QHeaderView, QPushButton, QSizePolicy,
-    QGraphicsView, QGraphicsScene, QGraphicsProxyWidget, QGraphicsRectItem
+    QGraphicsView, QGraphicsScene, QGraphicsProxyWidget, QGraphicsRectItem,
+    QScrollArea
 )
 from PySide6.QtGui import QBrush, QColor, QFont, QIcon
+import math
+
 from methods.metodo_ondulatorio import metodo_ondulatorio
 from methods.metodo_rayos import metodo_rayo
 from gui.latex_image_page import LatexLabel
 from gui.metodos_acoplados_page import MetodosAcopladosPage
 from methods.GraphicResults import GraphicResults
-import math
-
 
 class TableGraphicsView(QGraphicsView):
     def __init__(self):
@@ -48,8 +40,11 @@ class TableGraphicsView(QGraphicsView):
         # Add data cells
         for row in range(rows):
             for col in range(cols):
-                rect = QGraphicsRectItem(start_x + col * cell_width, start_y + (row + 1) * cell_height,
-                                         cell_width, cell_height)
+                rect = QGraphicsRectItem(
+                    start_x + col * cell_width,
+                    start_y + (row + 1) * cell_height,
+                    cell_width, cell_height
+                )
                 rect.setBrush(QBrush(QColor(220, 220, 220)))
                 rect.setPen(QColor(0, 0, 0))
                 self.scene().addItem(rect)
@@ -58,19 +53,22 @@ class TableGraphicsView(QGraphicsView):
                 label = QLabel(f"({row},{col})")
                 proxy = QGraphicsProxyWidget()
                 proxy.setWidget(label)
-                proxy.setPos(start_x + col * cell_width + 50, start_y + (row + 1) * cell_height + 20)
+                proxy.setPos(start_x + col * cell_width + 50,
+                             start_y + (row + 1) * cell_height + 20)
                 self.scene().addItem(proxy)
 
 
 class ResultsPage(QWidget):
     """
     A QWidget subclass that displays the results of two numerical methods
-    in tabular format.
+    in tabular format, with two additional LaTeX equations (for phi) above
+    the first (rayos) table. The entire content is wrapped in a QScrollArea
+    for scrolling.
     """
 
     METHODS = ["rayos", "ondulatorio"]
     TITLES = {
-        "rayos": "Metodo de rayos", 
+        "rayos": "Metodo de rayos",
         "ondulatorio": "Metodo ondulatorio"
     }
     EQUATIONS = {
@@ -93,9 +91,6 @@ class ResultsPage(QWidget):
     M = 3  # Number of columns
 
     def __init__(self, parent: QWidget, stack, n_co, n_cl, h, lambd):
-        """
-        Initializes the ResultsPage with the given parameters and sets up the UI.
-        """
         super().__init__(parent)
         self.n_co = n_co
         self.n_cl = n_cl
@@ -108,36 +103,76 @@ class ResultsPage(QWidget):
         self.n_eff_TM = [0] * 3
         self.setup_ui()
 
-
     def setup_ui(self):
         """
-        Sets up the UI layout, including tables for displaying results.
+        Sets up the UI layout, including tables for displaying results,
+        and a scroll bar. The phi equations appear above the rayos table.
         """
+
+        # 1) Apply a stylesheet removing the color for row/col headers
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #f0f0f0;
+                font-family: 'Helvetica';
+            }
+            QTableWidget {
+                background-color: #ffffff;
+                border: 1px solid #dddddd;
+                gridline-color: #cccccc;
+            }
+            QHeaderView::section {
+                background-color: #ffffff;
+                color: #2c3e50;
+                font-weight: bold;
+                border: 1px solid #dddddd;
+            }
+            QPushButton {
+                background-color: #2c3e50;
+                color: white;
+                border-radius: 4px;
+                padding: 6px 12px;
+                margin: 0px;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background-color: #1f2d3d;
+            }
+        """)
+
+        # 2) Create a QScrollArea to hold all content
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        container_widget = QWidget()
+        container_layout = QVBoxLayout(container_widget)
+        container_layout.setContentsMargins(20, 20, 20, 20)
+        container_layout.setSpacing(15)
+
+        # 3) Tables layout
         tables_layout = QHBoxLayout()
         table_layouts = []
 
         for method in self.METHODS:
             layout_table = QVBoxLayout()
-            
+
+            # Title label
             title = QLabel(self.TITLES[method])
-            title.setFont(QFont("Helvetica", 16, QFont.Bold))
+            title.setObjectName("titleLabel")
             layout_table.addWidget(title)
 
-            # Render equation with a larger fontsize
-            equation = LatexLabel(self.EQUATIONS[method], fontsize=12)
-            layout_table.addWidget(equation)
-
-            description = QLabel("Vamos a encontrar valores para el ángulo theta que resuelvan la siguiente ecuación")
+            description = QLabel("Vamos a encontrar valores para el ángulo θ que resuelvan la siguiente ecuación")
             description.setWordWrap(True)
             layout_table.addWidget(description)
 
-            # Create table and set header icon sizes
+            # Equation
+            main_eq = LatexLabel(self.EQUATIONS[method], fontsize=12)
+            layout_table.addWidget(main_eq)
+
+            # Create table
             table = QTableWidget(self.N, self.M)
             table.horizontalHeader().setIconSize(QSize(100, 40))
             table.verticalHeader().setIconSize(QSize(100, 40))
 
-            vertical_headers_items = self.getHeaders(self.VERTICAL_HEADERS, fontsize=20)
-
+            vertical_headers_items = self.getHeaders(self.VERTICAL_HEADERS, fontsize=18)
             for i in range(self.N):
                 table.setVerticalHeaderItem(i, vertical_headers_items[i])
             for i in range(self.M):
@@ -152,47 +187,60 @@ class ResultsPage(QWidget):
             layout_table.addWidget(table)
             table_layouts.append(layout_table)
 
-            # Fill table based on method
+            # Fill table
             if method == "rayos":
                 self.fillTableRayos(table)
-            elif method == "ondulatorio":
+            else:
                 self.fillTableOndulatorio(table)
-                # Add interactivity for ondulatorio table:
-                # When a cell in the first two rows is clicked, show the graphic.
                 table.cellClicked.connect(self.handle_ondulatorio_cell_clicked)
 
+            # If it's "rayos", show the phi equations ABOVE the table
+            if method == "rayos":
+                eq_phi_te = LatexLabel(
+                    r"$\phi_{TE} = \tan^{-1}[\frac{n_t}{n_i \cos(\theta)} \sqrt{\frac{n_i^2}{n_t^2}\sin^2(\theta) - 1}]$",
+                    fontsize=10
+                )
+                eq_phi_tm = LatexLabel(
+                    r"$\phi_{TM} = \tan^{-1}[\frac{n_i}{n_t \cos(\theta)} \sqrt{\frac{n_i^2}{n_t^2}\sin^2(\theta) - 1}]$",
+                    fontsize=10
+                )
+                layout_table.addWidget(eq_phi_te, alignment=Qt.AlignCenter)
+                layout_table.addWidget(eq_phi_tm, alignment=Qt.AlignCenter)
+
+
+        # 4) Add both table layouts side by side
         for layout in table_layouts:
             tables_layout.addLayout(layout)
 
-        main_layout = QVBoxLayout(self)
-        main_layout.addLayout(tables_layout, stretch=0)
+        container_layout.addLayout(tables_layout)
 
-        # Create a horizontal layout to hold both buttons side by side.
+        # 5) Buttons layout
         buttons_layout = QHBoxLayout()
-        buttons_layout.setSpacing(10)  # Reduce spacing between buttons
-        buttons_layout.setContentsMargins(0, 0, 0, 0)  # Reduce layout margins
+        buttons_layout.setSpacing(10)
 
-        # Create the "Back" button.
         self.submit_btn = QPushButton("Back")
-        self.submit_btn.setFixedWidth(100)  # Fixed width for "Back"
-        buttons_layout.addWidget(self.submit_btn)
+        self.submit_btn.setFixedWidth(100)
         self.submit_btn.clicked.connect(self.go_to_form)
+        buttons_layout.addWidget(self.submit_btn)
 
-        # Create the "Metodos Acoplados" button with increased width.
         self.metodos_btn = QPushButton("Metodos Acoplados")
-        self.metodos_btn.setFixedWidth(200)  # Increased width so the text fits
-        buttons_layout.addWidget(self.metodos_btn)
+        self.metodos_btn.setFixedWidth(200)
         self.metodos_btn.clicked.connect(self.go_to_metodos_acoplados)
+        buttons_layout.addWidget(self.metodos_btn)
 
-        # Add the horizontal layout containing the buttons to the main layout of the page.
-        main_layout.addLayout(buttons_layout)
+        container_layout.addLayout(buttons_layout)
 
+        # 6) Put container_widget in the scroll area
+        scroll_area.setWidget(container_widget)
+
+        # 7) Final layout
+        main_layout = QVBoxLayout(self)
+        main_layout.addWidget(scroll_area)
         self.setLayout(main_layout)
-
 
     def getHeaders(self, headers, fontsize=16):
         """
-        Converts header LaTeX strings into QTableWidgetItems with larger icons.
+        Converts header LaTeX strings into QTableWidgetItems with icons.
         """
         headers_items = []
         for h in headers:
@@ -201,7 +249,6 @@ class ResultsPage(QWidget):
             item.setIcon(QIcon(latex_pixmap))
             headers_items.append(item)
         return headers_items
-
 
     def fillTableRayos(self, table):
         """
@@ -216,7 +263,6 @@ class ResultsPage(QWidget):
         )
         self.fillTable(table, self.results_rayo)
 
-
     def fillTableOndulatorio(self, table):
         """
         Computes and fills the table with results from the ondulatorio method.
@@ -229,7 +275,6 @@ class ResultsPage(QWidget):
             ms=range(self.M)
         )
         self.fillTable(table, self.results_ondulatorio)
-
 
     def fillTable(self, table, results):
         """
@@ -245,26 +290,20 @@ class ResultsPage(QWidget):
             table.setItem(2, m, QTableWidgetItem(str(self.n_eff_TE[m])))
             table.setItem(3, m, QTableWidgetItem(str(self.n_eff_TM[m])))
 
-
     def handle_ondulatorio_cell_clicked(self, row, column):
         """
         Handles clicks on cells in the ondulatorio table.
         For the first two rows (row 0 for TE, row 1 for TM), it generates a pop-up
         graphic with two plots (E and H fields) corresponding to the clicked mode and m value.
         """
-        # Only consider first two rows (row 0 for TE, row 1 for TM)
         if row not in [0, 1]:
             return
 
         mode = "TE" if row == 0 else "TM"
-        m_index = column  # Each column corresponds to an m value
-
-        # Import the GraphicResults class and generate the plot.
-        # This new method 'plot_fields' returns one figure with two subplots (E and H).
+        m_index = column
         gr = GraphicResults(self.n_co, self.n_cl, self.h, self.lambd)
         fig = gr.plot_fields(mode, m_index)
-        fig.show()  
-
+        fig.show()
 
     def go_to_form(self):
         """
@@ -272,15 +311,10 @@ class ResultsPage(QWidget):
         """
         self.stack.removeWidget(self)
 
-
     def go_to_metodos_acoplados(self):
         """
         Navigates to the Metodos Acoplados page.
         """
         metodos_page = MetodosAcopladosPage(self, self.stack, self.n_eff_TE, self.n_eff_TM, self.lambd)
-    
-        # Add the new page to the stack.
         self.stack.addWidget(metodos_page)
-        
-        # Set the current widget in the stack to the new Metodos Acoplados page.
         self.stack.setCurrentWidget(metodos_page)
