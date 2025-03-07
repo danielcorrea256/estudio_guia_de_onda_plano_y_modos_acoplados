@@ -1,3 +1,20 @@
+"""
+FGraphicResults Module
+
+This module defines the `FGraphicResults` class, which calculates and plots 
+the optical coupling phenomenon in a two-waveguide system, parameterized by 
+two effective indices and a wavelength. The class provides methods to compute 
+key parameters (beta, delta, kappa, psi) and to plot the resulting Pa and Pb 
+functions for a given F value.
+
+Usage:
+    from FGraphicResults import FGraphicResults
+    
+    f_results = FGraphicResults(n_eff1=1.45, n_eff2=1.29, lambd=1.0)
+    fig = f_results.plot_F_graphs(F_value=0.2)
+    fig.show()
+"""
+
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -5,6 +22,19 @@ import matplotlib.pyplot as plt
 matplotlib.use('qtagg')
 
 class FGraphicResults:
+    """
+    A class for computing and plotting F-based coupling results in 
+    a two-waveguide system.
+
+    Attributes:
+        n_eff1 (float): Effective index 1.
+        n_eff2 (float): Effective index 2.
+        lambd (float): Wavelength.
+        beta1 (float): Computed beta for n_eff1.
+        beta2 (float): Computed beta for n_eff2.
+        delta (float): Half the difference between beta1 and beta2.
+    """
+
     def __init__(self, n_eff1, n_eff2, lambd):
         """
         Initializes the FGraphicResults object with effective indices and wavelength.
@@ -24,7 +54,16 @@ class FGraphicResults:
         self.delta = self.get_delta(self.beta1, self.beta2)
 
     def get_lc(self, psi):
-        return np.pi / 2*psi
+        """
+        Computes the coupling length (L_c) given psi.
+
+        Args:
+            psi (float): The psi parameter derived from kappa and delta.
+
+        Returns:
+            float: The coupling length as π/(2 * psi).
+        """
+        return np.pi / 2 * psi
 
     def get_beta(self, n_eff, lambd):
         """
@@ -45,11 +84,11 @@ class FGraphicResults:
         Computes delta as half the difference between beta1 and beta2.
         
         Args:
-            beta1 (float)
-            beta2 (float)
+            beta1 (float): Beta corresponding to n_eff1.
+            beta2 (float): Beta corresponding to n_eff2.
         
         Returns:
-            float: delta value.
+            float: The delta value (half of beta1 - beta2).
         """
         return (beta1 - beta2) / 2
 
@@ -70,7 +109,7 @@ class FGraphicResults:
         Computes psi as the square root of delta^2 + kappa^2.
         
         Args:
-            kappa (float)
+            kappa (float): The kappa parameter derived from delta and F.
             
         Returns:
             float: The computed psi.
@@ -83,11 +122,11 @@ class FGraphicResults:
         
         Args:
             z (array-like): x values.
-            psi (float)
-            F (float)
+            psi (float): The psi parameter.
+            F (float): The F parameter.
             
         Returns:
-            array-like: Computed Pa values.
+            array-like: Computed Pa values at each point in z.
         """
         return 1 - F * np.sin(psi * z)**2
 
@@ -97,14 +136,13 @@ class FGraphicResults:
         
         Args:
             z (array-like): x values.
-            psi (float)
-            F (float)
+            psi (float): The psi parameter.
+            F (float): The F parameter.
             
         Returns:
-            array-like: Computed Pb values.
+            array-like: Computed Pb values at each point in z.
         """
         return F * np.sin(psi * z)**2
-
 
     def plot_F_graphs(self, F_value, x_points=100):
         """
@@ -190,7 +228,6 @@ class FGraphicResults:
         return fig
 
 
-
 # --------------------------
 # Example usage:
 # --------------------------
@@ -198,6 +235,6 @@ if __name__ == "__main__":
     # Create an instance with effective indices and wavelength.
     f_results = FGraphicResults(n_eff1=1.45, n_eff2=1.29, lambd=1)
     # Generate the plot for F values 0.2 and 0.5.
-    fig = f_results.plot_F_graphs(F_values=[0.2, 0.5])
+    fig = f_results.plot_F_graphs(F_value=0.2)
     # Display the plot.
     plt.show()

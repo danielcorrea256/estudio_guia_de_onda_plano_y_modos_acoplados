@@ -1,8 +1,20 @@
 """
-LatexLabel Module
+latex_util Module
 
-This module defines the `LatexLabel` class, which extends QLabel to render
-LaTeX-formatted mathematical expressions as images using Matplotlib.
+This module provides the `LatexLabel` class, a PySide6 `QLabel` subclass 
+for rendering LaTeX math expressions. It uses Matplotlib to convert LaTeX 
+strings into images (QPixmap), ensuring minimal whitespace and a transparent 
+background. This allows you to display formatted mathematical equations 
+directly in a PySide6 GUI.
+
+Example:
+    from latex_util import LatexLabel
+
+    label = LatexLabel(r"$\alpha = 123$")
+    layout.addWidget(label)
+
+Classes:
+    LatexLabel: Inherits from QLabel and displays LaTeX text as a rendered image.
 """
 
 
@@ -25,7 +37,6 @@ class LatexLabel(QLabel):
         fontsize (int, optional): The font size of the rendered LaTeX text. Defaults to 8.
     """
 
-
     def __init__(self, latex_text, parent=None, fontsize=10):
         """
         Initializes the LatexLabel with the given LaTeX text.
@@ -38,7 +49,6 @@ class LatexLabel(QLabel):
         super().__init__(parent)
         pixmap = LatexLabel.latex_to_pixmap(latex_text, fontsize)
         self.setPixmap(pixmap)
-
 
     @classmethod
     def latex_to_pixmap(self, latex_text, fontsize=10):

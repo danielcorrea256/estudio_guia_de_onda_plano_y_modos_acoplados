@@ -10,7 +10,6 @@ button to navigate to the form page.
 from PySide6.QtWidgets import (
     QWidget, QLabel, QVBoxLayout, QPushButton
 )
-from PySide6.QtGui import QFont
 from gui.form_page import FormPage
 
 
@@ -25,9 +24,13 @@ class HomePage(QWidget):
 
     Args:
         parent (QWidget, optional): The parent widget. Defaults to None.
+        stack (QStackedWidget): The current stack of views for navigation.
     """
 
-    TITLE="Proyecto Estudio Guía de Onda Plano y Modos Acoplados"
+    # Title shown at the top of the page
+    TITLE = "Proyecto Estudio Guía de Onda Plano y Modos Acoplados"
+
+    # Description text providing an overview of the application's purpose
     DESCRIPTION = """Esta aplicación está diseñada para calcular los modos de propagación en una guía de onda plano.\nEl programa ofrece dos enfoques para el análisis: el método de rayos y el análisis ondulatorio.\nPara resolver las ecuaciones trascendentes que surgen al aplicar la teoría tanto de rayos como ondulatoria, implementamos el método numérico de bisección, lo que nos permite encontrar soluciones de manera eficiente y precisa.\nEste método es fundamental para encontrar los valores de los modos de propagación que no se pueden obtener directamente de manera analítica, al obtener los modos, se encuentran otros parámetros que son fundamentales para el estudio del guía de onda."""
 
     def __init__(self, parent, stack):
@@ -36,12 +39,11 @@ class HomePage(QWidget):
 
         Args:
             parent (QWidget): The parent widget.
-            stack (QStackedWidget): The current stack of views        
+            stack (QStackedWidget): The current stack of views.
         """
         super().__init__(parent)
         self.stack = stack
         self.setup_ui()
-
 
     def setup_ui(self):
         """
@@ -78,8 +80,11 @@ class HomePage(QWidget):
         layout.addStretch() 
         self.setLayout(layout)
 
-
     def go_to_form(self):
+        """
+        Creates an instance of FormPage and navigates the user to it 
+        by adding it to the stack and setting it as the current widget.
+        """
         self.form_page = FormPage(self, self.stack)
         self.stack.addWidget(self.form_page)
         self.stack.setCurrentWidget(self.form_page)

@@ -1,3 +1,23 @@
+"""
+test_ondulatorio.py
+
+This test file verifies the correctness of the waveguide mode calculations 
+based on the "ondulatorio" (wave-based) approach. It checks consistency 
+between the computed results and known reference functions or values 
+for TE (Transverse Electric) and TM (Transverse Magnetic) modes. Specifically:
+
+- `test_TE_function()`: Compares the function `funcion_ondulatoria` (TE) 
+  against a reference function from previous optical waveguide analysis.
+- `test_TM_function()`: Similarly compares `funcion_ondulatoria` (TM) 
+  against a reference function.
+- `test_result()`: Uses `metodo_ondulatorio` to compute angles for the first 
+  three modes and checks them against known reference angles.
+
+The tests rely on numeric comparisons (e.g., via `np.allclose`) to ensure 
+that the computed values are within acceptable tolerances of the 
+theoretical or reference data.
+"""
+
 import numpy as np
 import math
 from methods.metodo_ondulatorio import funcion_ondulatoria, metodo_ondulatorio
@@ -51,7 +71,6 @@ def test_TE_function():
         # Verificar que los resultados sean cercanos
         assert np.allclose(result, real), f"Error en el modo TE m={m}"
 
-
 def test_TM_function(): 
     """
     Verifica que la función funcion_ondulatoria para los modos TM (Transverse Magnetic) 
@@ -99,7 +118,6 @@ def test_TM_function():
 
         # Verificar que los resultados sean cercanos
         assert np.allclose(result, real), f"Error en el modo TM m={m}"
-
 
 def test_result():
     """

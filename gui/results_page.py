@@ -1,61 +1,28 @@
+"""
+gui.ResultsPage Module
+
+This module defines the `ResultsPage` class, which displays the results of two numerical methods 
+(rayos and ondulatorio) in a tabular format. Each method has its own table showing TE and TM 
+values, and for the "rayos" method, additional LaTeX equations for phi are included. 
+All content is placed within a QScrollArea for scrollable access, and users can navigate 
+to other parts of the application via the provided buttons.
+"""
+
+
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-    QTableWidget, QTableWidgetItem, QHeaderView, QPushButton, QSizePolicy,
-    QGraphicsView, QGraphicsScene, QGraphicsProxyWidget, QGraphicsRectItem,
-    QScrollArea
+    QTableWidget, QTableWidgetItem, QHeaderView, QPushButton, 
+    QSizePolicy, QScrollArea
 )
-from PySide6.QtGui import QBrush, QColor, QFont, QIcon
+from PySide6.QtGui import QIcon
 import math
 
 from methods.metodo_ondulatorio import metodo_ondulatorio
 from methods.metodo_rayos import metodo_rayo
-from gui.latex_image_page import LatexLabel
+from gui.latex_util import LatexLabel
 from gui.metodos_acoplados_page import MetodosAcopladosPage
 from methods.GraphicResults import GraphicResults
-
-class TableGraphicsView(QGraphicsView):
-    def __init__(self):
-        super().__init__()
-        self.setScene(QGraphicsScene(self))
-        self.setRenderHint(self.renderHints() | QGraphicsView.Antialiasing)
-
-        # Define table size
-        rows, cols = 2, 2
-        cell_width, cell_height = 150, 80
-        start_x, start_y = 50, 50  # Positioning
-
-        # Define headers with LaTeX equations (using a larger fontsize)
-        headers = [
-            r"$\nabla^2 u = 0$",  # Laplace equation
-            r"$\frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2} = 0$"
-        ]
-
-        # Add header row
-        for col, header_text in enumerate(headers):
-            latex_label = LatexLabel(header_text, fontsize=16)
-            proxy = self.scene().addWidget(latex_label)
-            proxy.setPos(start_x + col * cell_width, start_y)
-
-        # Add data cells
-        for row in range(rows):
-            for col in range(cols):
-                rect = QGraphicsRectItem(
-                    start_x + col * cell_width,
-                    start_y + (row + 1) * cell_height,
-                    cell_width, cell_height
-                )
-                rect.setBrush(QBrush(QColor(220, 220, 220)))
-                rect.setPen(QColor(0, 0, 0))
-                self.scene().addItem(rect)
-
-                # Sample text inside cells
-                label = QLabel(f"({row},{col})")
-                proxy = QGraphicsProxyWidget()
-                proxy.setWidget(label)
-                proxy.setPos(start_x + col * cell_width + 50,
-                             start_y + (row + 1) * cell_height + 20)
-                self.scene().addItem(proxy)
 
 
 class ResultsPage(QWidget):
@@ -91,6 +58,18 @@ class ResultsPage(QWidget):
     M = 3  # Number of columns
 
     def __init__(self, parent: QWidget, stack, n_co, n_cl, h, lambd):
+        """
+        Initializes the ResultsPage with the given waveguide parameters 
+        and sets up the user interface.
+
+        Args:
+            parent (QWidget): The parent widget.
+            stack (QStackedWidget): The widget stack for navigation.
+            n_co (float): Core refractive index.
+            n_cl (float): Cladding refractive index.
+            h (float): Waveguide height.
+            lambd (float): Wavelength.
+        """
         super().__init__(parent)
         self.n_co = n_co
         self.n_cl = n_cl
@@ -108,7 +87,6 @@ class ResultsPage(QWidget):
         Sets up the UI layout, including tables for displaying results,
         and a scroll bar. The phi equations appear above the rayos table.
         """
-
         # 1) Apply a stylesheet removing the color for row/col headers
         self.setStyleSheet("""
             QWidget {
@@ -207,7 +185,6 @@ class ResultsPage(QWidget):
                 layout_table.addWidget(eq_phi_te, alignment=Qt.AlignCenter)
                 layout_table.addWidget(eq_phi_tm, alignment=Qt.AlignCenter)
 
-
         # 4) Add both table layouts side by side
         for layout in table_layouts:
             tables_layout.addLayout(layout)
@@ -241,6 +218,13 @@ class ResultsPage(QWidget):
     def getHeaders(self, headers, fontsize=16):
         """
         Converts header LaTeX strings into QTableWidgetItems with icons.
+
+        Args:
+            headers (list): A list of LaTeX strings for the table headers.
+            fontsize (int): Font size for rendering the LaTeX headers.
+
+        Returns:
+            list: A list of QTableWidgetItem objects with LaTeX icons.
         """
         headers_items = []
         for h in headers:
@@ -253,6 +237,9 @@ class ResultsPage(QWidget):
     def fillTableRayos(self, table):
         """
         Computes and fills the table with results from the rayos method.
+
+        Args:
+            table (QTableWidget): The table to fill with computed results.
         """
         self.results_rayo = metodo_rayo(
             n_co=self.n_co,
@@ -266,6 +253,9 @@ class ResultsPage(QWidget):
     def fillTableOndulatorio(self, table):
         """
         Computes and fills the table with results from the ondulatorio method.
+
+        Args:
+            table (QTableWidget): The table to fill with computed results.
         """
         self.results_ondulatorio = metodo_ondulatorio(
             n_co=self.n_co,
@@ -278,7 +268,12 @@ class ResultsPage(QWidget):
 
     def fillTable(self, table, results):
         """
-        Populates the table with numerical results.
+        Populates the table with numerical results for TE and TM modes.
+
+        Args:
+            table (QTableWidget): The table where results are placed.
+            results (dict): A dictionary containing "TE" and "TM" lists 
+                            with the computed angles.
         """
         for m in range(self.M):
             self.alpha_TE[m] = round(results["TE"][m], 1)
@@ -293,8 +288,14 @@ class ResultsPage(QWidget):
     def handle_ondulatorio_cell_clicked(self, row, column):
         """
         Handles clicks on cells in the ondulatorio table.
-        For the first two rows (row 0 for TE, row 1 for TM), it generates a pop-up
-        graphic with two plots (E and H fields) corresponding to the clicked mode and m value.
+
+        For the first two rows (row 0 for TE, row 1 for TM), this method 
+        generates a pop-up graphic with two plots (E and H fields) corresponding 
+        to the clicked mode and m value.
+
+        Args:
+            row (int): The row index in the table.
+            column (int): The column index in the table.
         """
         if row not in [0, 1]:
             return

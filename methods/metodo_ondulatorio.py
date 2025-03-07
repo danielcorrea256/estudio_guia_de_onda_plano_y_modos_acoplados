@@ -1,3 +1,21 @@
+"""
+methods.metodo_ondulatorio Module
+
+This module provides functions for analyzing waveguide modes using the 
+"ondulatorio" (wave-based) approach. It computes the valid angles of incidence 
+(θ) for both TE and TM modes in a planar waveguide, relying on a transcendental 
+equation for U that is solved numerically using bisection. The key functions are:
+
+- get_W:          Generates a function W(U) based on mode index (m) and mode type (TE/TM).
+- funcion_ondulatoria: Returns a function whose roots give valid U values for propagation.
+- metodo_ondulatorio:  Uses these functions to find permissible angles for TE and TM modes.
+
+Example:
+    # Compute angles for modes 0, 1, 2 in a waveguide:
+    results = metodo_ondulatorio(n_co=1.5, n_cl=1.0, h=1.0, lambd=1.0, ms=[0,1,2])
+    print(results)  # {'TE': {0: theta_0, 1: theta_1, ...}, 'TM': {...}}
+"""
+
 import matplotlib.pyplot as plt
 import scipy.optimize
 import numpy as np
