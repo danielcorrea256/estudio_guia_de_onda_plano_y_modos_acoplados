@@ -1,5 +1,5 @@
 """
-HomePage Module
+gui.HomePage Module
 
 This module defines the `HomePage` class, which serves as the main landing page 
 for a PySide6 GUI application. It displays a title, a brief description, and a 
