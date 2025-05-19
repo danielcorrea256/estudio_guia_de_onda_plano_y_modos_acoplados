@@ -200,11 +200,10 @@ class ResultsPage(QWidget):
         self.submit_btn.clicked.connect(self.go_to_form)
         buttons_layout.addWidget(self.submit_btn)
 
-        self.metodos_btn = QPushButton("Metodos Acoplados")
-        self.metodos_btn.setFixedWidth(200)
-        self.metodos_btn.clicked.connect(self.go_to_metodos_acoplados)
-        buttons_layout.addWidget(self.metodos_btn)
-
+        #self.metodos_btn = QPushButton("Metodos Acoplados")
+        #self.metodos_btn.setFixedWidth(200)
+        #self.metodos_btn.clicked.connect(self.go_to_metodos_acoplados)
+        #buttons_layout.addWidget(self.metodos_btn)
         container_layout.addLayout(buttons_layout)
 
         # 6) Put container_widget in the scroll area
